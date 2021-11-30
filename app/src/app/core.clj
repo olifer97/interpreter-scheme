@@ -545,7 +545,10 @@
   "Lee una cadena desde la terminal/consola. Si los parentesis no estan correctamente balanceados al presionar Enter/Intro,
    se considera que la cadena ingresada es una subcadena y el ingreso continua. De lo contrario, se la devuelve completa."
    []
-   (str "Hello" "World")
+   (loop [input (read-line) acc []]
+    (if (= (verificar-parentesis (apply str (conj acc input))) 0)
+      (apply str (conj acc input))
+      (recur (read-line) (conj acc input " "))))
 )
 
 
@@ -561,8 +564,16 @@
 ; 0
 (defn verificar-parentesis
   "Cuenta los parentesis en una cadena, sumando 1 si `(`, restando 1 si `)`. Si el contador se hace negativo, para y retorna -1."
-  []
-  ()
+  [x]
+  (reduce (fn [sum c] 
+          (if (< sum 0) 
+            (reduced -1)
+            (case c
+        \( (+ sum 1)
+        \) (- sum 1)
+        sum))) 
+        0 
+        x)
 )
 
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
