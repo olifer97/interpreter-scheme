@@ -555,7 +555,7 @@
 (defn actualizar-amb
   "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor. 
   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza la nueva informacion."
-  []
+  [amb key value]
   ())
 
 ; user=> (buscar 'c '(a 1 b 2 c 3 d 4 e 5))
@@ -565,8 +565,10 @@
 (defn buscar
   "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
    y devuelve el valor asociado. Devuelve un error :unbound-variable si no la encuentra."
-  []
-  ())
+  [x amb]
+  (try
+    (nth amb (+ (first (keep-indexed #(if (= x %2) %1) amb)) 1))
+    (catch Exception e (generar-mensaje-error :unbound-variable x))))
 
 ; user=> (error? (list (symbol ";ERROR:") 'mal 'hecho))
 ; true
@@ -576,8 +578,8 @@
 ; true
 (defn error?
   "Devuelve true o false, segun sea o no el arg. una lista con `;ERROR:` o `;WARNING:` como primer elemento."
-  []
-  ())
+  [args]
+  (or (= (first args) (symbol ";ERROR:")) (= (first args) (symbol ";WARNING:"))))
 
 ; user=> (proteger-bool-en-str "(or #F #f #t #T)")
 ; "(or %F %f %t %T)"
