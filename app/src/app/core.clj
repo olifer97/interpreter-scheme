@@ -556,7 +556,10 @@
   "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor. 
   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza la nueva informacion."
   [amb key value]
-  ())
+  (cond
+     (error? value) amb
+     (error? (buscar key amb)) (concat amb (list key value))
+     :else amb)) ; TODO
 
 ; user=> (buscar 'c '(a 1 b 2 c 3 d 4 e 5))
 ; 3
@@ -579,7 +582,7 @@
 (defn error?
   "Devuelve true o false, segun sea o no el arg. una lista con `;ERROR:` o `;WARNING:` como primer elemento."
   [args]
-  (or (= (first args) (symbol ";ERROR:")) (= (first args) (symbol ";WARNING:"))))
+  (and (seq? args) (or (= (first args) (symbol ";ERROR:")) (= (first args) (symbol ";WARNING:")))))
 
 ; user=> (proteger-bool-en-str "(or #F #f #t #T)")
 ; "(or %F %f %t %T)"

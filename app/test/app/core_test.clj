@@ -46,3 +46,21 @@
 (deftest error-1-test
   (testing "error"
     (is (= (error? (list (symbol ";WARNING:") 'mal 'hecho)) true))))
+
+; actualizar-amb
+
+(deftest actualizar-amb-0-test
+  (testing "actualizar-amb"
+    (is (= (actualizar-amb '(a 1 b 2 c 3) 'd 4) '(a 1 b 2 c 3 d 4)))))
+
+(deftest actualizar-amb-1-test
+  (testing "actualizar-amb"
+    (is (= (actualizar-amb '(a 1 b 2 c 3) 'b 4) '(a 1 b 4 c 3)))))
+
+(deftest actualizar-amb-2-test
+  (testing "actualizar-amb"
+    (is (= (actualizar-amb '(a 1 b 2 c 3) 'b (list (symbol ";ERROR:") 'mal 'hecho)) '(a 1 b 2 c 3)))))
+
+(deftest actualizar-amb-3-test
+  (testing "actualizar-amb"
+    (is (= (actualizar-amb () 'b 7)) '(b 7))))
