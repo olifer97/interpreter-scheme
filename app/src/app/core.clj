@@ -544,6 +544,9 @@
           0
           x))
 
+(defn indice [x amb]
+  (+ (first (keep-indexed #(if (= x %2) %1) amb)) 1))
+
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
 ; (a 1 b 2 c 3 d 4)
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'b 4)
@@ -557,20 +560,25 @@
   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza la nueva informacion."
   [amb key value]
   (cond
-     (error? value) amb
-     (error? (buscar key amb)) (concat amb (list key value))
-     :else amb)) ; TODO
+    (error? value) amb
+    (error? (buscar key amb)) (concat amb (list key value))
+    :else (let [key_index (indice key amb)]
+            (map-indexed (fn [idx itm] (if (= idx key_index) value itm)) amb))))
+
+
 
 ; user=> (buscar 'c '(a 1 b 2 c 3 d 4 e 5))
 ; 3
 ; user=> (buscar 'f '(a 1 b 2 c 3 d 4 e 5))
 ; (;ERROR: unbound variable: f)
+
+
 (defn buscar
   "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
    y devuelve el valor asociado. Devuelve un error :unbound-variable si no la encuentra."
   [x amb]
   (try
-    (nth amb (+ (first (keep-indexed #(if (= x %2) %1) amb)) 1))
+    (nth amb (indice x amb))
     (catch Exception e (generar-mensaje-error :unbound-variable x))))
 
 ; user=> (error? (list (symbol ";ERROR:") 'mal 'hecho))
