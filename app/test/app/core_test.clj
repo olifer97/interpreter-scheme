@@ -112,4 +112,18 @@
   (testing "igual?"
     (is (= (igual? 6 "6") false))))
 
+;fnc-append
+
+(deftest fnc-append-0-test
+  (testing "fnc-append"
+    (is (= (fnc-append '((1 2) (3) (4 5) (6 7))) '(1 2 3 4 5 6 7)))))
+
+(deftest fnc-append-1-test
+  (testing "fnc-append"
+    (is (= (fnc-append '((1 2) 3 (4 5) (6 7))) (list (symbol ";ERROR:") (symbol "append:") 'Wrong 'type 'in 'arg '3)))))
+
+(deftest fnc-append-2-test
+  (testing "fnc-append"
+    (is (= (fnc-append '((1 2) A (4 5) (6 7))) (list (symbol ";ERROR:") (symbol "append:") 'Wrong 'type 'in 'arg 'A)))))
+
 
