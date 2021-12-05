@@ -63,4 +63,19 @@
 
 (deftest actualizar-amb-3-test
   (testing "actualizar-amb"
-    (is (= (actualizar-amb () 'b 7)) '(b 7))))
+    (is (= (actualizar-amb () 'b 7) '(b 7)))))
+
+; proteger-bool-en-str
+
+(deftest proteger-bool-en-str-0-test
+  (testing "proteger-bool-en-str"
+    (is (= (proteger-bool-en-str "(or #F #f #t #T)") "(or %F %f %t %T)"))))
+
+(deftest proteger-bool-en-str-1-test
+  (testing "proteger-bool-en-str"
+    (is (= (proteger-bool-en-str "(and (or #F #f #t #T) #T)") "(and (or %F %f %t %T) %T)"))))
+
+(deftest proteger-bool-en-str-2-test
+  (testing "proteger-bool-en-str"
+    (is (= (proteger-bool-en-str "") ""))))
+

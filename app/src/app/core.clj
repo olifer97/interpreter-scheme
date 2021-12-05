@@ -600,8 +600,8 @@
 ; ""
 (defn proteger-bool-en-str
   "Cambia, en una cadena, #t por %t y #f por %f (y sus respectivas versiones en mayusculas), para poder aplicarle read-string."
-  []
-  ())
+  [string]
+  (apply str (map (fn [c] (if (= c \#) "%" c)) string)))
 
 ; user=> (restaurar-bool (read-string (proteger-bool-en-str "(and (or #F #f #t #T) #T)")))
 ; (and (or #F #f #t #T) #T)
