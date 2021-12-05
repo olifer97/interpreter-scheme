@@ -645,6 +645,9 @@
                            (reduced (generar-mensaje-error :wrong-type-arg 'append c))))
           '() lists))
 
+
+(defn traduce-bool [bool] (if bool (symbol "#t") (symbol "#f")))
+
 ; user=> (fnc-equal? ())
 ; #t
 ; user=> (fnc-equal? '(A))
@@ -663,8 +666,12 @@
 ; #f
 (defn fnc-equal?
   "Compara elementos. Si son iguales, devuelve #t. Si no, #f."
-  []
-  ())
+  [elements]
+  (traduce-bool (if (empty? elements) true (reduce (fn [result c] (cond
+                               (nil? (peek result)) (reduced true)
+                               (igual? (peek result) c) (pop result)
+                               :else (reduced false)))
+              (pop elements) elements))))
 
 ; user=> (fnc-read ())
 ; (hola

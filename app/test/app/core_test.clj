@@ -126,4 +126,37 @@
   (testing "fnc-append"
     (is (= (fnc-append '((1 2) A (4 5) (6 7))) (list (symbol ";ERROR:") (symbol "append:") 'Wrong 'type 'in 'arg 'A)))))
 
+;fnc-equal?
+
+(deftest fnc-equal?-0-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '()) (symbol "#t")))))
+
+(deftest fnc-equal?-1-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(A)) (symbol "#t")))))
+
+(deftest fnc-equal?-2-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(A a)) (symbol "#t")))))
+
+(deftest fnc-equal?-3-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(A a A)) (symbol "#t")))))
+
+(deftest fnc-equal?-4-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(A a A a)) (symbol "#t")))))
+
+(deftest fnc-equal?-5-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(A a A B)) (symbol "#f")))))
+
+(deftest fnc-equal?-6-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(1 1 1 1)) (symbol "#t")))))
+
+(deftest fnc-equal?-7-test
+  (testing "fnc-equal?"
+    (is (= (fnc-equal? '(1 1 2 1)) (symbol "#f")))))
 
