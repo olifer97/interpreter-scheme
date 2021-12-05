@@ -846,8 +846,11 @@
 ; ((;ERROR: unbound variable: n) (x 6 y 11 z "hola"))
 (defn evaluar-escalar
   "Evalua una expresion escalar. Devuelve una lista con el resultado y un ambiente."
-  []
-  ())
+  [var amb]
+  (list (cond
+          (integer? var) var
+          (string? var) var
+          :else (buscar var amb)) amb))
 
 ; user=> (evaluar-define '(define x 2) '(x 1))
 ; (#<unspecified> (x 2))

@@ -324,3 +324,26 @@
   (testing "fnc-mayor-o-igual"
     (is (= (fnc-mayor-o-igual '(2 1 A 0)) (list (symbol ";ERROR:") (symbol ">=:") 'Wrong 'type 'in 'arg2 'A)))))
 
+; evaluar-escalar
+
+(deftest evaluar-escalar-0-test
+  (testing "evaluar-escalar"
+    (is (= (evaluar-escalar 32 '(x 6 y 11 z "hola")) (list 32 '(x 6 y 11 z "hola"))))))
+
+(deftest evaluar-escalar-1-test
+  (testing "evaluar-escalar"
+    (is (= (evaluar-escalar "chau" '(x 6 y 11 z "hola")) (list "chau" '(x 6 y 11 z "hola"))))))
+
+(deftest evaluar-escalar-2-test
+  (testing "evaluar-escalar"
+    (is (= (evaluar-escalar 'y '(x 6 y 11 z "hola")) (list 11 '(x 6 y 11 z "hola"))))))
+
+(deftest evaluar-escalar-3-test
+  (testing "evaluar-escalar"
+    (is (= (evaluar-escalar 'z '(x 6 y 11 z "hola")) (list "hola" '(x 6 y 11 z "hola"))))))
+
+(deftest evaluar-escalar-4-test
+  (testing "evaluar-escalar"
+    (is (= (evaluar-escalar 'n '(x 6 y 11 z "hola")) (list (list (symbol ";ERROR:") 'unbound (symbol "variable:") 'n) '(x 6 y 11 z "hola"))))))
+
+
