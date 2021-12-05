@@ -624,8 +624,11 @@
 ; false
 (defn igual?
   "Verifica la igualdad entre dos elementos al estilo de Scheme (case-insensitive)"
-  []
-  ())
+  [a b]
+  (cond 
+    (= (type a) (type b))(= (st/lower-case a) (st/lower-case b))
+    :else false)
+  )
 
 ; user=> (fnc-append '( (1 2) (3) (4 5) (6 7)))
 ; (1 2 3 4 5 6 7)

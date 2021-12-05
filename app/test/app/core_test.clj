@@ -89,5 +89,27 @@
   (testing "restaurar-bool"
     (is (= (restaurar-bool (read-string "(and (or %F %f %t %T) %T)")) (symbol "(and (or #F #f #t #T) #T)")))))
 
+; igual?
+
+(deftest igual?-0-test
+  (testing "igual?"
+    (is (= (igual? 'if 'IF) true))))
+
+
+(deftest igual?-1-test
+  (testing "igual?"
+    (is (= (igual? 'if 'if) true))))
+
+(deftest igual?-2-test
+  (testing "igual?"
+    (is (= (igual? 'IF 'IF) true))))
+
+(deftest igual?-3-test
+  (testing "igual?"
+    (is (= (igual? 'IF "IF") false))))
+
+(deftest igual?-4-test
+  (testing "igual?"
+    (is (= (igual? 6 "6") false))))
 
 
