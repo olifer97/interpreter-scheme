@@ -645,7 +645,9 @@
                            (reduced (generar-mensaje-error :wrong-type-arg 'append c))))
           '() lists))
 
-(defn traduce-bool [bool] (if bool (symbol "#t") (symbol "#f")))
+(defn traduce-bool [bool] (cond
+                            (seq? bool) bool ; is and error
+                            :else (if bool (symbol "#t") (symbol "#f"))))
 
 ; user=> (fnc-equal? ())
 ; #t
@@ -686,7 +688,7 @@
   "Devuelve la lectura de un elemento de Scheme desde la terminal/consola."
   [args]
   (cond
-    (empty? args) (leer-entrada)
+    (empty? args) (symbol (leer-entrada))
     (= 1 (count args)) (generar-mensaje-error :io-ports-not-implemented "read")
     :else (generar-mensaje-error :wrong-number-args-prim-proc "read")))
 
@@ -713,7 +715,7 @@
     (empty? elements) 0
     (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "+" (first elements))
     :else (reduce (fn [result c] (try (+ c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "+" c)))))
-            0 elements)))
+                  0 elements)))
 
 ; user=> (fnc-restar ())
 ; (;ERROR: -: Wrong number of args given)
@@ -743,6 +745,20 @@
     :else (reduce (fn [result c] (try (- result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "-" c)))))
                   (* 2 (first elements)) elements)))
 
+
+(defn fnc-comp
+  [elements op opname]
+  (traduce-bool (cond
+                (empty? elements) true
+                (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
+                :else (reduce (fn [result c] (cond
+                                               (nil? (peek result)) (reduced true)
+                                               (not (integer? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
+                                               (not (integer? (peek result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (peek result)))
+                                               (op c (peek result)) (pop result)
+                                               :else (reduced false)))
+                              (pop elements) elements))))
+
 ; user=> (fnc-menor ())
 ; #t
 ; user=> (fnc-menor '(1))
@@ -765,8 +781,8 @@
 ; (;ERROR: <: Wrong type in arg2 A)
 (defn fnc-menor
   "Devuelve #t si los numeros de una lista estan en orden estrictamente creciente; si no, #f."
-  []
-  ())
+  [elements]
+  (fnc-comp elements < "<"))
 
 ; user=> (fnc-mayor ())
 ; #t
@@ -790,8 +806,8 @@
 ; (;ERROR: >: Wrong type in arg2 A)
 (defn fnc-mayor
   "Devuelve #t si los numeros de una lista estan en orden estrictamente decreciente; si no, #f."
-  []
-  ())
+  [elements]
+  (fnc-comp elements > ">"))
 
 ; user=> (fnc-mayor-o-igual ())
 ; #t

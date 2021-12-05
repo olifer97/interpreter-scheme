@@ -182,7 +182,7 @@
   (testing "fnc-sumar"
     (is (= (fnc-sumar '(A 4 5 6)) (list (symbol ";ERROR:") (symbol "+:") 'Wrong 'type 'in 'arg1 'A)))))
 
-(deftest fnc-sumar-5-test ; TODO: check this
+(deftest fnc-sumar-5-test
   (testing "fnc-sumar"
     (is (= (fnc-sumar '(4 A 5 6)) (list (symbol ";ERROR:") (symbol "+:") 'Wrong 'type 'in 'arg2 'A)))))
 
@@ -211,3 +211,79 @@
 (deftest fnc-restar-5-test ; TODO: check
   (testing "fnc-restar"
     (is (= (fnc-restar '(4 A 5 6)) (list (symbol ";ERROR:") (symbol "-:") 'Wrong 'type 'in 'arg2 'A)))))
+
+; fnc-menor
+(deftest fnc-menor-0-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor ()) (symbol "#t")))))
+
+(deftest fnc-menor-1-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1)) (symbol "#t")))))
+
+(deftest fnc-menor-2-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 2)) (symbol "#t")))))
+
+(deftest fnc-menor-3-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 2 3)) (symbol "#t")))))
+
+(deftest fnc-menor-4-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 2 2 4)) (symbol "#f")))))
+
+(deftest fnc-menor-5-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 2 1 4)) (symbol "#f")))))
+
+(deftest fnc-menor-6-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(A 1 2 4)) (list (symbol ";ERROR:") (symbol "<:") 'Wrong 'type 'in 'arg1 'A)))))
+
+(deftest fnc-menor-7-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 A 1 4)) (list (symbol ";ERROR:") (symbol "<:") 'Wrong 'type 'in 'arg2 'A)))))
+
+(deftest fnc-menor-8-test
+  (testing "fnc-menor"
+    (is (= (fnc-menor '(1 2 A 4)) (list (symbol ";ERROR:") (symbol "<:") 'Wrong 'type 'in 'arg2 'A)))))
+
+
+; fnc-mayor
+(deftest fnc-mayor-0-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor ()) (symbol "#t")))))
+
+(deftest fnc-mayor-1-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(1)) (symbol "#t")))))
+
+(deftest fnc-mayor-2-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(2 1)) (symbol "#t")))))
+
+(deftest fnc-mayor-3-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(3 2 1)) (symbol "#t")))))
+
+(deftest fnc-mayor-4-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(4 2 2 1)) (symbol "#f")))))
+
+(deftest fnc-mayor-5-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(2 1 4 1)) (symbol "#f")))))
+
+(deftest fnc-mayor-6-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(A 4 2 1)) (list (symbol ";ERROR:") (symbol ">:") 'Wrong 'type 'in 'arg1 'A)))))
+
+(deftest fnc-mayor-7-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(4 A 3 2)) (list (symbol ";ERROR:") (symbol ">:") 'Wrong 'type 'in 'arg2 'A)))))
+
+(deftest fnc-mayor-8-test
+  (testing "fnc-mayor"
+    (is (= (fnc-mayor '(2 1 A 0)) (list (symbol ";ERROR:") (symbol ">:") 'Wrong 'type 'in 'arg2 'A)))))
+
