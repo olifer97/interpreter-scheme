@@ -709,8 +709,11 @@
 (defn fnc-sumar
   "Suma los elementos de una lista."
   [elements]
-  (reduce (fn [result c] (try (+ c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg1 "+" c)))))
-          0 elements))
+  (cond
+    (empty? elements) 0
+    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "+" (first elements))
+    :else (reduce (fn [result c] (try (+ c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "+" c)))))
+            0 elements)))
 
 ; user=> (fnc-restar ())
 ; (;ERROR: -: Wrong number of args given)
@@ -728,10 +731,17 @@
 ; (;ERROR: -: Wrong type in arg2 A)
 ; user=> (fnc-restar '(3 4 A 6))
 ; (;ERROR: -: Wrong type in arg2 A)
+
+
 (defn fnc-restar
   "Resta los elementos de un lista."
-  []
-  ())
+  [elements]
+  (cond
+    (empty? elements) (generar-mensaje-error :wrong-number-args-oper "-")
+    (= 1 (count elements)) (- 0 (first elements))
+    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "-" (first elements))
+    :else (reduce (fn [result c] (try (- result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "-" c)))))
+                  (* 2 (first elements)) elements)))
 
 ; user=> (fnc-menor ())
 ; #t

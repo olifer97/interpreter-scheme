@@ -185,3 +185,29 @@
 (deftest fnc-sumar-5-test ; TODO: check this
   (testing "fnc-sumar"
     (is (= (fnc-sumar '(4 A 5 6)) (list (symbol ";ERROR:") (symbol "+:") 'Wrong 'type 'in 'arg2 'A)))))
+
+; fnc-restar
+
+(deftest fnc-restar-0-test
+  (testing "fnc-restar"
+    (is (= (fnc-restar ()) (list (symbol ";ERROR:") (symbol "-:") 'Wrong 'number 'of 'args 'given)))))
+
+(deftest fnc-restar-1-test
+  (testing "fnc-restar"
+    (is (= (fnc-restar '(3)) -3))))
+
+(deftest fnc-restar-2-test
+  (testing "fnc-restar"
+    (is (= (fnc-restar '(3 4)) -1))))
+
+(deftest fnc-restar-3-test
+  (testing "fnc-restar"
+    (is (= (fnc-restar '(3 4 5)) -6))))
+
+(deftest fnc-restar-4-test
+  (testing "fnc-restar"
+    (is (= (fnc-restar '(A 4 5 6)) (list (symbol ";ERROR:") (symbol "-:") 'Wrong 'type 'in 'arg1 'A)))))
+
+(deftest fnc-restar-5-test ; TODO: check
+  (testing "fnc-restar"
+    (is (= (fnc-restar '(4 A 5 6)) (list (symbol ";ERROR:") (symbol "-:") 'Wrong 'type 'in 'arg2 'A)))))
