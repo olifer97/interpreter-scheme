@@ -645,7 +645,6 @@
                            (reduced (generar-mensaje-error :wrong-type-arg 'append c))))
           '() lists))
 
-
 (defn traduce-bool [bool] (if bool (symbol "#t") (symbol "#f")))
 
 ; user=> (fnc-equal? ())
@@ -668,10 +667,10 @@
   "Compara elementos. Si son iguales, devuelve #t. Si no, #f."
   [elements]
   (traduce-bool (if (empty? elements) true (reduce (fn [result c] (cond
-                               (nil? (peek result)) (reduced true)
-                               (igual? (peek result) c) (pop result)
-                               :else (reduced false)))
-              (pop elements) elements))))
+                                                                    (nil? (peek result)) (reduced true)
+                                                                    (igual? (peek result) c) (pop result)
+                                                                    :else (reduced false)))
+                                                   (pop elements) elements))))
 
 ; user=> (fnc-read ())
 ; (hola
@@ -710,7 +709,8 @@
 (defn fnc-sumar
   "Suma los elementos de una lista."
   [elements]
-  (apply + elements))
+  (reduce (fn [result c] (try (+ c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg1 "+" c)))))
+          0 elements))
 
 ; user=> (fnc-restar ())
 ; (;ERROR: -: Wrong number of args given)

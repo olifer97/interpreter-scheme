@@ -160,3 +160,28 @@
   (testing "fnc-equal?"
     (is (= (fnc-equal? '(1 1 2 1)) (symbol "#f")))))
 
+;fnc-sumar
+
+(deftest fnc-sumar-0-test
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar ()) 0))))
+
+(deftest fnc-sumar-1-test
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar '(3)) 3))))
+
+(deftest fnc-sumar-2-test
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar '(3 4)) 7))))
+
+(deftest fnc-sumar-3-test
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar '(3 4 5)) 12))))
+
+(deftest fnc-sumar-4-test
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar '(A 4 5 6)) (list (symbol ";ERROR:") (symbol "+:") 'Wrong 'type 'in 'arg1 'A)))))
+
+(deftest fnc-sumar-5-test ; TODO: check this
+  (testing "fnc-sumar"
+    (is (= (fnc-sumar '(4 A 5 6)) (list (symbol ";ERROR:") (symbol "+:") 'Wrong 'type 'in 'arg2 'A)))))
