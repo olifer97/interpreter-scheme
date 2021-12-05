@@ -250,7 +250,7 @@
     (is (= (fnc-menor '(1 2 A 4)) (list (symbol ";ERROR:") (symbol "<:") 'Wrong 'type 'in 'arg2 'A)))))
 
 
-; fnc-mayor
+; fnc-mayor-o-igual
 (deftest fnc-mayor-0-test
   (testing "fnc-mayor"
     (is (= (fnc-mayor ()) (symbol "#t")))))
@@ -286,4 +286,41 @@
 (deftest fnc-mayor-8-test
   (testing "fnc-mayor"
     (is (= (fnc-mayor '(2 1 A 0)) (list (symbol ";ERROR:") (symbol ">:") 'Wrong 'type 'in 'arg2 'A)))))
+
+; fnc-mayor-o-igual
+(deftest fnc-mayor-o-igual-0-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual ()) (symbol "#t")))))
+
+(deftest fnc-mayor-o-igual-1-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(1)) (symbol "#t")))))
+
+(deftest fnc-mayor-o-igual-2-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(2 1)) (symbol "#t")))))
+
+(deftest fnc-mayor-o-igual-3-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(3 2 1)) (symbol "#t")))))
+
+(deftest fnc-mayor-o-igual-4-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(4 2 2 1)) (symbol "#t")))))
+
+(deftest fnc-mayor-o-igual-5-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(2 1 4 1)) (symbol "#f")))))
+
+(deftest fnc-mayor-o-igual-6-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(A 4 2 1)) (list (symbol ";ERROR:") (symbol ">=:") 'Wrong 'type 'in 'arg1 'A)))))
+
+(deftest fnc-mayor-o-igual-7-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(4 A 3 2)) (list (symbol ";ERROR:") (symbol ">=:") 'Wrong 'type 'in 'arg2 'A)))))
+
+(deftest fnc-mayor-o-igual-8-test
+  (testing "fnc-mayor-o-igual"
+    (is (= (fnc-mayor-o-igual '(2 1 A 0)) (list (symbol ";ERROR:") (symbol ">=:") 'Wrong 'type 'in 'arg2 'A)))))
 

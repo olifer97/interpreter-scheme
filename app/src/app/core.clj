@@ -831,8 +831,8 @@
 ; (;ERROR: >=: Wrong type in arg2 A)
 (defn fnc-mayor-o-igual
   "Devuelve #t si los numeros de una lista estan en orden decreciente; si no, #f."
-  []
-  ())
+  [elements]
+  (fnc-comp elements >= ">="))
 
 ; user=> (evaluar-escalar 32 '(x 6 y 11 z "hola"))
 ; (32 (x 6 y 11 z "hola"))
