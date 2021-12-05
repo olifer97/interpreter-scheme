@@ -685,8 +685,11 @@
 ; (;ERROR: Wrong number of args given #<primitive-procedure read>)
 (defn fnc-read
   "Devuelve la lectura de un elemento de Scheme desde la terminal/consola."
-  []
-  ())
+  [args]
+  (cond
+    (empty? args) (leer-entrada)
+    (= 1 (count args)) (generar-mensaje-error :io-ports-not-implemented "read")
+    :else (generar-mensaje-error :wrong-number-args-prim-proc "read")))
 
 ; user=> (fnc-sumar ())
 ; 0
@@ -706,8 +709,8 @@
 ; (;ERROR: +: Wrong type in arg2 A)
 (defn fnc-sumar
   "Suma los elementos de una lista."
-  []
-  ())
+  [elements]
+  (apply + elements))
 
 ; user=> (fnc-restar ())
 ; (;ERROR: -: Wrong number of args given)
