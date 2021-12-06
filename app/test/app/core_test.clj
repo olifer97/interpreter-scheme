@@ -346,4 +346,26 @@
   (testing "evaluar-escalar"
     (is (= (evaluar-escalar 'n '(x 6 y 11 z "hola")) (list (list (symbol ";ERROR:") 'unbound (symbol "variable:") 'n) '(x 6 y 11 z "hola"))))))
 
+; evaluar-if
 
+; evaluar-set!
+
+(deftest evaluar-set!-0-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! '(set! x 1) '(x 0)) (list (symbol "#<unspecified>") '(x 1))))))
+
+(deftest evaluar-set!-1-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! '(set! x 1) '()) (list (list (symbol ";ERROR:") 'unbound (symbol "variable:") 'x) '())))))
+
+(deftest evaluar-set!-2-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! '(set! x) '(x 0)) (list (list (symbol ";ERROR: set!: missing or extra expression (set! x)") '(x 0)))))))
+
+(deftest evaluar-set!-3-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! '(set! x 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'missing 'or 'extra 'expression '(set! x 1 2))) '(x 0)))))
+
+(deftest evaluar-set!-4-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! '(set! 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'bad 'variable '1)) '(x 0)))))

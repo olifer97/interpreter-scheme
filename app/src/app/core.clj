@@ -100,9 +100,9 @@
      (let [renglon (leer-entrada)]                       ; READ
        (if (= renglon "")
          (repl amb)
-         (let [str-corregida (proteger-bool-en-str renglon),
-               cod-en-str (read-string str-corregida),
-               cod-corregido (restaurar-bool cod-en-str),
+         (let [str-corregida (proteger-bool-en-str renglon)
+               cod-en-str (read-string str-corregida)
+               cod-corregido (restaurar-bool cod-en-str)
                res (evaluar cod-corregido amb)]     ; EVAL
            (if (nil? (second res))              ;   Si el ambiente del resultado es `nil`, es porque se ha evaluado (exit)
              'Goodbye!                        ;   En tal caso, sale del REPL devolviendo Goodbye!.
@@ -132,7 +132,7 @@
          ;
          ;
 
-      :else (let [res-eval-1 (evaluar (first expre) amb),
+      :else (let [res-eval-1 (evaluar (first expre) amb)
                   res-eval-2 (reduce (fn [x y] (let [res-eval-3 (evaluar y (first x))] (cons (second res-eval-3) (concat (next x) (list (first res-eval-3)))))) (cons (list (second res-eval-1)) (next expre)))]
               (aplicar (first res-eval-1) (next res-eval-2) (first res-eval-2))))))
 
@@ -160,10 +160,10 @@
   [fnc lae amb]
   (let [lae-con-quotes (map #(if (or (number? %) (string? %) (and (seq? %) (igual? (first %) 'lambda)))
                                %
-                               (list 'quote %)) lae),
-        nuevos-pares (reduce concat (map list (second fnc) lae-con-quotes)),
-        mapa (into (hash-map) (vec (map vec (partition 2 nuevos-pares)))),
-        cuerpo (first (nnext fnc)),
+                               (list 'quote %)) lae)
+        nuevos-pares (reduce concat (map list (second fnc) lae-con-quotes))
+        mapa (into (hash-map) (vec (map vec (partition 2 nuevos-pares))))
+        cuerpo (first (nnext fnc))
         expre (if (and (seq? cuerpo) (seq? (first cuerpo)) (igual? (ffirst cuerpo) 'lambda))
                 (cons (first cuerpo) (postwalk-replace mapa (rest cuerpo)))
                 (postwalk-replace mapa cuerpo))]
@@ -410,8 +410,8 @@
 (defn cargar-arch
   "Carga y devuelve el contenido de un archivo."
   ([amb arch]
-   (let [res (evaluar arch amb),
-         nom-original (first res),
+   (let [res (evaluar arch amb)
+         nom-original (first res)
          nuevo-amb (second res)]
      (if (error? nom-original)
        (do (imprimir nom-original) nuevo-amb)                 ; Mostrar el error
@@ -649,6 +649,12 @@
                             (seq? bool) bool ; is and error
                             :else (if bool (symbol "#t") (symbol "#f"))))
 
+(defn inverse-traduce-bool [scheme-bool] (cond
+                                           (seq? scheme-bool) scheme-bool ; is and error
+                                           (number? scheme-bool) scheme-bool
+                                           (= (symbol "#t") scheme-bool) true
+                                           :else false))
+
 ; user=> (fnc-equal? ())
 ; #t
 ; user=> (fnc-equal? '(A))
@@ -749,15 +755,15 @@
 (defn fnc-comp
   [elements op opname]
   (traduce-bool (cond
-                (empty? elements) true
-                (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
-                :else (reduce (fn [result c] (cond
-                                               (nil? (peek result)) (reduced true)
-                                               (not (integer? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
-                                               (not (integer? (peek result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (peek result)))
-                                               (op c (peek result)) (pop result)
-                                               :else (reduced false)))
-                              (pop elements) elements))))
+                  (empty? elements) true
+                  (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
+                  :else (reduce (fn [result c] (cond
+                                                 (nil? (peek result)) (reduced true)
+                                                 (not (integer? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
+                                                 (not (integer? (peek result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (peek result)))
+                                                 (op c (peek result)) (pop result)
+                                                 :else (reduced false)))
+                                (pop elements) elements))))
 
 ; user=> (fnc-menor ())
 ; #t
@@ -850,6 +856,7 @@
   (list (cond
           (integer? var) var
           (string? var) var
+          (= (symbol "#<unspecified>") var) var
           :else (buscar var amb)) amb))
 
 ; user=> (evaluar-define '(define x 2) '(x 1))
@@ -891,8 +898,12 @@
 ; ((;ERROR: if: missing or extra expression (if 1)) (n 7))
 (defn evaluar-if
   "Evalua una expresion `if`. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
-  []
-  ())
+  [expre amb]
+  (let [n (count expre)] (cond
+                           (< n 3) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
+                           (> n 4) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
+                           (= n 3) (evaluar-escalar (if (inverse-traduce-bool (second expre)) (second (next expre)) (symbol "#<unspecified>")) amb)
+                           (= n 4) (evaluar-escalar (if (inverse-traduce-bool (second expre)) (second (next expre)) (last expre)) amb))))
 
 ; user=> (evaluar-or (list 'or) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
 ; (#f (#f #f #t #t))
@@ -921,8 +932,13 @@
 ; ((;ERROR: set!: bad variable 1) (x 0))
 (defn evaluar-set!
   "Evalua una expresion `set!`. Devuelve una lista con el resultado y un ambiente actualizado con la redefinicion."
-  []
-  ())
+  [expre amb]
+  (cond
+    (= (count expre) 3) (cond
+                          (not (symbol? (second expre))) (list (generar-mensaje-error :bad-variable "set!" (second expre)) amb)
+                          (error? (buscar (second expre) amb)) (list (generar-mensaje-error :unbound-variable (second expre)) amb)
+                          :else (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre))))
+    :else (list (generar-mensaje-error :missing-or-extra "set!" expre) amb)))
 
 
 ; Al terminar de cargar el archivo en el REPL de Clojure, se debe devolver true.
