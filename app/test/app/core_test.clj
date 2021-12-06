@@ -380,7 +380,6 @@
   (testing "evaluar-if"
     (is (= (evaluar-if '(if 1) '(n 7)) (list (list (symbol ";ERROR:") (symbol "if:") 'missing 'or 'extra 'expression '(if 1)) '(n 7))))))
 
-
 ; evaluar-define
 
 (deftest evaluar-define-0-test
@@ -416,6 +415,27 @@
   (testing "evaluar-define"
     (is (= (evaluar-define '(define 2 x) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'bad 'variable '(define 2 x)) '(x 1))))))
 
+; evaluar-or
+
+(deftest evaluar-or-0-test
+  (testing "evaluar-or"
+    (is (= (evaluar-or (list 'or) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t"))) (list (symbol "#f") (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))))))
+
+(deftest evaluar-or-1-test
+  (testing "evaluar-or"
+    (is (= (evaluar-or (list 'or (symbol "#t")) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t"))) (list (symbol "#t") (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))))))
+
+(deftest evaluar-or-2-test
+  (testing "evaluar-or"
+    (is (= (evaluar-or (list 'or 7) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t"))) (list 7 (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))))))
+
+(deftest evaluar-or-3-test
+  (testing "evaluar-or"
+    (is (= (evaluar-or (list 'or (symbol "#f") 5) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t"))) (list 5 (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))))))
+
+(deftest evaluar-or-4-test
+  (testing "evaluar-or"
+    (is (= (evaluar-or (list 'or (symbol "#f")) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t"))) (list (symbol "#f") (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))))))
 
 ; evaluar-set!
 

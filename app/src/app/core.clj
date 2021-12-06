@@ -122,9 +122,9 @@
       (not (seq? expre))             (evaluar-escalar expre amb)
 
       (igual? (first expre) 'define) (evaluar-define expre amb)
-      
+
       (igual? (first expre) 'set!) (evaluar-set! expre amb)
-      
+
       (igual? (first expre) 'if) (evaluar-if expre amb)
 
          ;
@@ -755,7 +755,6 @@
     :else (reduce (fn [result c] (try (- result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "-" c)))))
                   (* 2 (first elements)) elements)))
 
-
 (defn fnc-comp
   [elements op opname]
   (traduce-bool (cond
@@ -930,8 +929,12 @@
 ; (#f (#f #f #t #t))
 (defn evaluar-or
   "Evalua una expresion `or`.  Devuelve una lista con el resultado y un ambiente."
-  []
-  ())
+  [expre amb]
+  
+  (let [args (pop expre)] (list (if (empty? args) (symbol "#f") (reduce (fn [result c] (cond
+                                                                     (not (= (symbol "#f") c)) (reduced c)
+                                                                     :else result))
+                                                    (symbol "#f") args)) amb)))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
 ; (#<unspecified> (x 1))
