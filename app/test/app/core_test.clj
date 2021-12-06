@@ -348,6 +348,42 @@
 
 ; evaluar-if
 
+; evaluar-define
+
+(deftest evaluar-define-0-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define x 2) '(x 1)) (list (symbol "#<unspecified>") '(x 2))))))
+
+(deftest evaluar-define-1-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define (f x) (+ x 1)) '(x 1)) (list (symbol "#<unspecified>") (list 'x 1 'f (list 'lambda '(x) '(+ x 1))))))))
+
+(deftest evaluar-define-2-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'missing 'or 'extra 'expression '(define)) '(x 1))))))
+
+(deftest evaluar-define-3-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define x) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'missing 'or 'extra 'expression '(define x)) '(x 1))))))
+
+(deftest evaluar-define-4-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define x 2 3) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'missing 'or 'extra 'expression '(define x 2 3)) '(x 1))))))
+
+(deftest evaluar-define-5-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define ()) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'missing 'or 'extra 'expression '(define ())) '(x 1))))))
+
+(deftest evaluar-define-6-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define () 2) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'bad 'variable '(define () 2)) '(x 1))))))
+
+
+(deftest evaluar-define-7-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define 2 x) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'bad 'variable '(define 2 x)) '(x 1))))))
+
+
 ; evaluar-set!
 
 (deftest evaluar-set!-0-test

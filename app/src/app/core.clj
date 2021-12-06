@@ -122,6 +122,10 @@
       (not (seq? expre))             (evaluar-escalar expre amb)
 
       (igual? (first expre) 'define) (evaluar-define expre amb)
+      
+      (igual? (first expre) 'set!) (evaluar-set! expre amb)
+      
+      (igual? (first expre) 'if) (evaluar-if expre amb)
 
          ;
          ;
@@ -859,6 +863,10 @@
           (= (symbol "#<unspecified>") var) var
           :else (buscar var amb)) amb))
 
+(defn definir-funcion
+  [func amb]
+  (concat amb (list (first (first func)) (list 'lambda (list (last (first func))) (last func)))))
+
 ; user=> (evaluar-define '(define x 2) '(x 1))
 ; (#<unspecified> (x 2))
 ; user=> (evaluar-define '(define (f x) (+ x 1)) '(x 1))
@@ -877,8 +885,13 @@
 ; ((;ERROR: define: bad variable (define 2 x)) (x 1))
 (defn evaluar-define
   "Evalua una expresion `define`. Devuelve una lista con el resultado y un ambiente actualizado con la definicion."
-  []
-  ())
+  [expre amb]
+  (cond
+    (= (count expre) 3) (cond
+                          (symbol? (second expre)) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre)))
+                          (and (seq? (second expre)) (= 2 (count (second expre)))) (list (symbol "#<unspecified>") (definir-funcion (pop expre) amb))
+                          :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
+    :else (list (generar-mensaje-error :missing-or-extra "define" expre) amb)))
 
 ; user=> (evaluar-if '(if 1 2) '(n 7))
 ; (2 (n 7))
