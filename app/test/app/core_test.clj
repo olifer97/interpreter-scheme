@@ -360,12 +360,12 @@
 
 (deftest evaluar-set!-2-test
   (testing "evaluar-set!"
-    (is (= (evaluar-set! '(set! x) '(x 0)) (list (list (symbol ";ERROR: set!: missing or extra expression (set! x)") '(x 0)))))))
+    (is (= (evaluar-set! '(set! x) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'missing 'or 'extra 'expression '(set! x)) '(x 0))))))
 
 (deftest evaluar-set!-3-test
   (testing "evaluar-set!"
-    (is (= (evaluar-set! '(set! x 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'missing 'or 'extra 'expression '(set! x 1 2))) '(x 0)))))
+    (is (= (evaluar-set! '(set! x 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'missing 'or 'extra 'expression '(set! x 1 2))  '(x 0))))))
 
 (deftest evaluar-set!-4-test
   (testing "evaluar-set!"
-    (is (= (evaluar-set! '(set! 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'bad 'variable '1)) '(x 0)))))
+    (is (= (evaluar-set! '(set! 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'bad 'variable '1) '(x 0))))))
