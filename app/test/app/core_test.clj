@@ -348,6 +348,39 @@
 
 ; evaluar-if
 
+(deftest evaluar-if-0-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if '(if 1 2) '(n 7)) (list 2 '(n 7))))))
+
+(deftest evaluar-if-1-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if '(if 1 n) '(n 7)) (list 7 '(n 7))))))
+
+(deftest evaluar-if-2-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if '(if 1 n 8) '(n 7)) (list 7 '(n 7))))))
+
+(deftest evaluar-if-3-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if (list 'if (symbol "#f") 'n) (list 'n 7 (symbol "#f") (symbol "#f"))) (list (symbol "#<unspecified>") (list 'n 7 (symbol "#f") (symbol "#f")))))))
+
+(deftest evaluar-if-4-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if (list 'if (symbol "#f") 'n 8) (list 'n 7 (symbol "#f") (symbol "#f"))) (list 8 (list 'n 7 (symbol "#f") (symbol "#f")))))))
+
+(deftest evaluar-if-5-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if (list 'if (symbol "#f") 'n '(set! n 9)) (list 'n 7 (symbol "#f") (symbol "#f"))) (list (symbol "#<unspecified>") (list 'n 9 (symbol "#f") (symbol "#f")))))))
+
+(deftest evaluar-if-6-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if '(if) '(n 7)) (list (list (symbol ";ERROR:") (symbol "if:") 'missing 'or 'extra 'expression '(if)) '(n 7))))))
+
+(deftest evaluar-if-7-test
+  (testing "evaluar-if"
+    (is (= (evaluar-if '(if 1) '(n 7)) (list (list (symbol ";ERROR:") (symbol "if:") 'missing 'or 'extra 'expression '(if 1)) '(n 7))))))
+
+
 ; evaluar-define
 
 (deftest evaluar-define-0-test

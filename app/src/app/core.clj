@@ -915,8 +915,8 @@
   (let [n (count expre)] (cond
                            (< n 3) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
                            (> n 4) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
-                           (= n 3) (evaluar-escalar (if (inverse-traduce-bool (second expre)) (second (next expre)) (symbol "#<unspecified>")) amb)
-                           (= n 4) (evaluar-escalar (if (inverse-traduce-bool (second expre)) (second (next expre)) (last expre)) amb))))
+                           (= n 3) (if (inverse-traduce-bool (second expre)) (evaluar (second (next expre)) amb) (list (symbol "#<unspecified>") amb))
+                           (= n 4) (evaluar (if (inverse-traduce-bool (second expre)) (second (next expre)) (last expre)) amb))))
 
 ; user=> (evaluar-or (list 'or) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
 ; (#f (#f #f #t #t))
