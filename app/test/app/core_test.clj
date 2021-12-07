@@ -390,6 +390,10 @@
   (testing "evaluar-define"
     (is (= (evaluar-define '(define (f x) (+ x 1)) '(x 1)) (list (symbol "#<unspecified>") (list 'x 1 'f (list 'lambda '(x) '(+ x 1))))))))
 
+(deftest evaluar-define-8-test
+  (testing "evaluar-define"
+    (is (= (evaluar-define '(define (f x) (display x) (newline) (+ x 1)) '(x 1)) (list (symbol "#<unspecified>") (list 'x 1 'f (list 'lambda '(x) '(display x) '(newline) '(+ x 1))))))))
+
 (deftest evaluar-define-2-test
   (testing "evaluar-define"
     (is (= (evaluar-define '(define) '(x 1)) (list (list (symbol ";ERROR:") (symbol "define:") 'missing 'or 'extra 'expression '(define)) '(x 1))))))
