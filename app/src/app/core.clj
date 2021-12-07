@@ -126,15 +126,8 @@
       (igual? (first expre) 'set!) (evaluar-set! expre amb)
 
       (igual? (first expre) 'if) (evaluar-if expre amb)
-
-         ;
-         ;
-         ;
-         ; Si la expresion no es la aplicacion de una funcion (es una forma especial, una macro...) debe ser evaluada
-         ; por una funcion de Clojure especifica debido a que puede ser necesario evitar la evaluacion de los argumentos
-         ;
-         ;
-         ;
+      
+      (igual? (first expre) 'or) (evaluar-or expre amb)
 
       :else (let [res-eval-1 (evaluar (first expre) amb)
                   res-eval-2 (reduce (fn [x y] (let [res-eval-3 (evaluar y (first x))] (cons (second res-eval-3) (concat (next x) (list (first res-eval-3)))))) (cons (list (second res-eval-1)) (next expre)))]
@@ -185,21 +178,44 @@
   [fnc lae amb]
   (cond
     (= fnc '<)            (fnc-menor lae)
-
-    ;
-    ;
-    ; Si la funcion primitiva esta identificada por un simbolo, puede determinarse mas rapido que hacer con ella
-    ;
-    ;
-
+    
+    (= fnc '>)            (fnc-mayor lae)
+    
+    (= fnc '>=)            (fnc-mayor-o-igual lae)
+    
+    (= fnc '-)            (fnc-restar lae)
+    
+    (= fnc '+)            (fnc-sumar lae)
+    
+    (= fnc '=)            (fnc-equal? lae)
 
     (igual? fnc 'append)  (fnc-append lae)
-
-    ;
-    ;
-    ; Si la funcion primitiva esta identificada mediante una palabra reservada, debe ignorarse la distincion entre mayusculas y minusculas 
-    ;
-    ;
+    
+    (igual? fnc 'read)  (fnc-read lae)
+    
+    (igual? fnc 'car)  (fnc-car lae)
+    
+    (igual? fnc 'cdr)  (fnc-cdr lae)
+    
+    (igual? fnc 'cons)  (fnc-cons lae)
+    
+    (igual? fnc 'display)  (fnc-display lae)
+    
+    (igual? fnc 'env)  (fnc-env lae amb)
+    
+    (igual? fnc 'length)  (fnc-length lae)
+    
+    (igual? fnc 'list)  (fnc-list lae)
+    
+    (igual? fnc 'list?)  (fnc-list? lae)
+    
+    (igual? fnc 'newline)  (fnc-newline lae)
+    
+    (igual? fnc 'null?)  (fnc-null? lae)
+    
+    (igual? fnc 'not)  (fnc-not lae)
+    
+    (igual? fnc 'reverse)  (fnc-reverse lae)
 
     :else (generar-mensaje-error :wrong-type-apply fnc)))
 
