@@ -128,6 +128,18 @@
       (igual? (first expre) 'if) (evaluar-if expre amb)
       
       (igual? (first expre) 'or) (evaluar-or expre amb)
+      
+      (igual? (first expre) 'exit) (evaluar-exit expre amb)
+      
+      (igual? (first expre) 'eval) (evaluar-eval expre amb)
+      
+      (igual? (first expre) 'cond) (evaluar-cond expre amb)
+      
+      (igual? (first expre) 'quote) (evaluar-quote expre amb)
+      
+      (igual? (first expre) 'lambda) (evaluar-lambda expre amb)
+      
+      (igual? (first expre) 'load) (evaluar-load expre amb)
 
       :else (let [res-eval-1 (evaluar (first expre) amb)
                   res-eval-2 (reduce (fn [x y] (let [res-eval-3 (evaluar y (first x))] (cons (second res-eval-3) (concat (next x) (list (first res-eval-3)))))) (cons (list (second res-eval-1)) (next expre)))]
@@ -630,7 +642,7 @@
 (defn restaurar-bool
   "Cambia, en un codigo leido con read-string, %t por #t y %f por #f (y sus respectivas versiones en mayusculas)."
   [sentence]
-  (symbol (st/replace sentence #"%" "#")))
+  (map (fn [item] (if (seq? item)(restaurar-bool item)(symbol (st/replace item #"%" "#")))) sentence))
 
 ; user=> (igual? 'if 'IF)
 ; true

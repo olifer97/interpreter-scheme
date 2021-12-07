@@ -81,13 +81,13 @@
 
 ; restaurar-bool
 
-(deftest proteger-bool-en-str-0-test
+(deftest restaurar-bool-0-test
   (testing "restaurar-bool"
-    (is (= (restaurar-bool (read-string (proteger-bool-en-str "(and (or #F #f #t #T) #T)"))) (symbol "(and (or #F #f #t #T) #T)")))))
+    (is (= (restaurar-bool (read-string (proteger-bool-en-str "(and (or #F #f #t #T) #T)"))) (list 'and (list 'or (symbol "#F") (symbol "#f") (symbol "#t") (symbol "#T")) (symbol "#T"))))))
 
-(deftest proteger-bool-en-str-1-test
+(deftest restaurar-bool-1-test
   (testing "restaurar-bool"
-    (is (= (restaurar-bool (read-string "(and (or %F %f %t %T) %T)")) (symbol "(and (or #F #f #t #T) #T)")))))
+    (is (= (restaurar-bool (read-string "(and (or %F %f %t %T) %T)")) (list 'and (list 'or (symbol "#F") (symbol "#f") (symbol "#t") (symbol "#T")) (symbol "#T"))))))
 
 ; igual?
 
