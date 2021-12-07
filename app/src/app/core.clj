@@ -577,7 +577,7 @@
           x))
 
 (defn indice [x amb]
-  (+ (first (keep-indexed #(if (= x %2) %1) amb)) 1))
+  (+ (first (keep-indexed #(if (igual? x %2) %1) amb)) 1))
 
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
 ; (a 1 b 2 c 3 d 4)
@@ -642,7 +642,7 @@
 (defn restaurar-bool
   "Cambia, en un codigo leido con read-string, %t por #t y %f por #f (y sus respectivas versiones en mayusculas)."
   [sentence]
-  (map (fn [item] (if (seq? item)(restaurar-bool item)(symbol (st/replace item #"%" "#")))) sentence))
+  (map (fn [item] (if (seq? item)(restaurar-bool item)(if (symbol? item)(symbol (st/replace item #"%" "#"))item))) sentence))
 
 ; user=> (igual? 'if 'IF)
 ; true
