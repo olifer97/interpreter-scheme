@@ -891,8 +891,8 @@
           :else (buscar var amb)) amb))
 
 (defn definir-funcion
-  [func amb]
-  (concat amb (list (first (first func)) (list 'lambda (list (last (first func))) (last func)))))
+  [firm def amb]
+  (concat amb (list (first firm) (list 'lambda (rest firm) def))))
 
 ; user=> (evaluar-define '(define x 2) '(x 1))
 ; (#<unspecified> (x 2))
@@ -916,7 +916,7 @@
   (cond
     (= (count expre) 3) (cond
                           (symbol? (second expre)) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre)))
-                          (and (seq? (second expre)) (= 2 (count (second expre)))) (list (symbol "#<unspecified>") (definir-funcion (pop expre) amb))
+                          (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (second expre) (last expre) amb))
                           :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
     :else (list (generar-mensaje-error :missing-or-extra "define" expre) amb)))
 
