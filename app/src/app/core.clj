@@ -126,19 +126,19 @@
       (igual? (first expre) 'set!) (evaluar-set! expre amb)
 
       (igual? (first expre) 'if) (evaluar-if expre amb)
-      
+
       (igual? (first expre) 'or) (evaluar-or expre amb)
-      
+
       (igual? (first expre) 'exit) (evaluar-exit expre amb)
-      
+
       (igual? (first expre) 'eval) (evaluar-eval expre amb)
-      
+
       (igual? (first expre) 'cond) (evaluar-cond expre amb)
-      
+
       (igual? (first expre) 'quote) (evaluar-quote expre amb)
-      
+
       (igual? (first expre) 'lambda) (evaluar-lambda expre amb)
-      
+
       (igual? (first expre) 'load) (evaluar-load expre amb)
 
       :else (let [res-eval-1 (evaluar (first expre) amb)
@@ -190,45 +190,45 @@
   [fnc lae amb]
   (cond
     (= fnc '<)            (fnc-menor lae)
-    
+
     (= fnc '>)            (fnc-mayor lae)
-    
+
     (= fnc '>=)            (fnc-mayor-o-igual lae)
-    
+
     (= fnc '-)            (fnc-restar lae)
-    
+
     (= fnc '+)            (fnc-sumar lae)
-    
+
     (= fnc '=)            (fnc-equal? lae)
 
     (igual? fnc 'append)  (fnc-append lae)
-    
+
     (igual? fnc 'read)  (fnc-read lae)
-    
+
     (igual? fnc 'car)  (fnc-car lae)
-    
+
     (igual? fnc 'cdr)  (fnc-cdr lae)
-    
+
     (igual? fnc 'cons)  (fnc-cons lae)
-    
+
     (igual? fnc 'display)  (fnc-display lae)
-    
+
     (igual? fnc 'env)  (fnc-env lae amb)
-    
+
     (igual? fnc 'length)  (fnc-length lae)
-    
+
     (igual? fnc 'list)  (fnc-list lae)
-    
+
     (igual? fnc 'list?)  (fnc-list? lae)
-    
+
     (igual? fnc 'newline)  (fnc-newline lae)
-    
+
     (igual? fnc 'null?)  (fnc-null? lae)
-    
+
     (igual? fnc 'not)  (fnc-not lae)
-    
+
     (igual? fnc 'reverse)  (fnc-reverse lae)
-    
+
     (igual? fnc 'equal?)            (fnc-equal? lae)
 
     :else (generar-mensaje-error :wrong-type-apply fnc)))
@@ -579,7 +579,7 @@
           x))
 
 (defn indice [x amb]
-  (+ (first (keep-indexed #(if (igual? x %2) %1) amb)) 1))
+  (+ (first (keep-indexed #(if (and (even? %1) (igual? x %2)) %1) amb)) 1))
 
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
 ; (a 1 b 2 c 3 d 4)
@@ -644,7 +644,7 @@
 (defn restaurar-bool
   "Cambia, en un codigo leido con read-string, %t por #t y %f por #f (y sus respectivas versiones en mayusculas)."
   [sentence]
-  (map (fn [item] (if (seq? item)(restaurar-bool item)(if (symbol? item)(symbol (st/replace item #"%" "#"))item))) sentence))
+  (map (fn [item] (if (seq? item) (restaurar-bool item) (if (symbol? item) (symbol (st/replace item #"%" "#")) item))) sentence))
 
 ; user=> (igual? 'if 'IF)
 ; true
@@ -896,7 +896,6 @@
   [func amb]
   (concat amb (list (first (first func)) (concat (list 'lambda (rest (first func))) (rest func)))))
 
-
 (defn m-e-error
   [func expre amb] (list (generar-mensaje-error :missing-or-extra func expre) amb))
 
@@ -923,9 +922,9 @@
   [expre amb]
   (cond
     (>= (count expre) 3) (cond
-                          (symbol? (second expre)) (if (> (count expre) 3) (m-e-error "define" expre amb)(list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre)))) 
-                          (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (rest expre) amb))
-                          :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
+                           (symbol? (second expre)) (if (> (count expre) 3) (m-e-error "define" expre amb) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre))))
+                           (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (rest expre) amb))
+                           :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
     :else (m-e-error "define" expre amb)))
 
 ; user=> (evaluar-if '(if 1 2) '(n 7))
@@ -966,11 +965,11 @@
 (defn evaluar-or
   "Evalua una expresion `or`.  Devuelve una lista con el resultado y un ambiente."
   [expre amb]
-  
-  (let [args (rest expre)] (if (empty? args) (list (symbol "#f") amb) (reduce (fn [result c] (cond
-                                                                     (not (= (symbol "#f") c)) (reduced (evaluar c amb))
-                                                                     :else (list result amb)))
-                                                    (symbol "#f") args))))
+
+  (let [args (rest expre)] (if (empty? args) (list (symbol "#f") amb) (list (reduce (fn [result c] (let [evaluated (first (evaluar c amb))] (cond
+                                                          (not (= (symbol "#f") evaluated)) (reduced evaluated)
+                                                          :else result)))
+        (symbol "#f") args) amb))))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
 ; (#<unspecified> (x 1))
