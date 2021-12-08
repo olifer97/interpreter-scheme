@@ -893,8 +893,12 @@
           :else (buscar var amb)) amb))
 
 (defn definir-funcion
-  [firm def amb]
-  (concat amb (list (first firm) (list 'lambda (rest firm) def))))
+  [func amb]
+  (concat amb (list (first (first func)) (concat (list 'lambda (rest (first func))) (rest func)))))
+
+
+(defn m-e-error
+  [func expre amb] (list (generar-mensaje-error :missing-or-extra func expre) amb))
 
 ; user=> (evaluar-define '(define x 2) '(x 1))
 ; (#<unspecified> (x 2))
@@ -912,15 +916,17 @@
 ; ((;ERROR: define: bad variable (define () 2)) (x 1))
 ; user=> (evaluar-define '(define 2 x) '(x 1))
 ; ((;ERROR: define: bad variable (define 2 x)) (x 1))
+; user=> (evaluar-define '(define (f x) (display x) (newline) (+ x 1)) '(x 1))
+; (#<unspecified> (x 1 f (lambda (x) (display x) (newline) (+ x 1))))
 (defn evaluar-define
   "Evalua una expresion `define`. Devuelve una lista con el resultado y un ambiente actualizado con la definicion."
   [expre amb]
   (cond
-    (= (count expre) 3) (cond
-                          (symbol? (second expre)) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre)))
-                          (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (second expre) (last expre) amb))
+    (>= (count expre) 3) (cond
+                          (symbol? (second expre)) (if (> (count expre) 3) (m-e-error "define" expre amb)(list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre)))) 
+                          (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (rest expre) amb))
                           :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
-    :else (list (generar-mensaje-error :missing-or-extra "define" expre) amb)))
+    :else (m-e-error "define" expre amb)))
 
 ; user=> (evaluar-if '(if 1 2) '(n 7))
 ; (2 (n 7))
@@ -942,8 +948,8 @@
   "Evalua una expresion `if`. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
   [expre amb]
   (let [n (count expre)] (cond
-                           (< n 3) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
-                           (> n 4) (list (generar-mensaje-error :missing-or-extra "if" expre) amb)
+                           (< n 3) (m-e-error "if" expre amb)
+                           (> n 4) (m-e-error "if" expre amb)
                            (= n 3) (if (inverse-traduce-bool (second expre)) (evaluar (second (next expre)) amb) (list (symbol "#<unspecified>") amb))
                            (= n 4) (evaluar (if (inverse-traduce-bool (second expre)) (second (next expre)) (last expre)) amb))))
 
