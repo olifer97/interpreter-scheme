@@ -228,6 +228,8 @@
     (igual? fnc 'not)  (fnc-not lae)
     
     (igual? fnc 'reverse)  (fnc-reverse lae)
+    
+    (igual? fnc 'equal?)            (fnc-equal? lae)
 
     :else (generar-mensaje-error :wrong-type-apply fnc)))
 
@@ -707,10 +709,10 @@
   "Compara elementos. Si son iguales, devuelve #t. Si no, #f."
   [elements]
   (traduce-bool (if (empty? elements) true (reduce (fn [result c] (cond
-                                                                    (nil? (peek result)) (reduced true)
-                                                                    (igual? (peek result) c) (pop result)
+                                                                    (nil? (first result)) (reduced true)
+                                                                    (igual? (first result) c) (rest result)
                                                                     :else (reduced false)))
-                                                   (pop elements) elements))))
+                                                   (rest elements) elements))))
 
 ; user=> (fnc-read ())
 ; (hola
@@ -789,12 +791,12 @@
                   (empty? elements) true
                   (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
                   :else (reduce (fn [result c] (cond
-                                                 (nil? (peek result)) (reduced true)
+                                                 (nil? (first result)) (reduced true)
                                                  (not (integer? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
-                                                 (not (integer? (peek result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (peek result)))
-                                                 (op c (peek result)) (pop result)
+                                                 (not (integer? (first result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (first result)))
+                                                 (op c (first result)) (rest result)
                                                  :else (reduced false)))
-                                (pop elements) elements))))
+                                (rest elements) elements))))
 
 ; user=> (fnc-menor ())
 ; #t
@@ -959,10 +961,10 @@
   "Evalua una expresion `or`.  Devuelve una lista con el resultado y un ambiente."
   [expre amb]
   
-  (let [args (pop expre)] (list (if (empty? args) (symbol "#f") (reduce (fn [result c] (cond
-                                                                     (not (= (symbol "#f") c)) (reduced c)
-                                                                     :else result))
-                                                    (symbol "#f") args)) amb)))
+  (let [args (rest expre)] (if (empty? args) (list (symbol "#f") amb) (reduce (fn [result c] (cond
+                                                                     (not (= (symbol "#f") c)) (reduced (evaluar c amb))
+                                                                     :else (list result amb)))
+                                                    (symbol "#f") args))))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
 ; (#<unspecified> (x 1))
@@ -981,7 +983,7 @@
     (= (count expre) 3) (cond
                           (not (symbol? (second expre))) (list (generar-mensaje-error :bad-variable "set!" (second expre)) amb)
                           (error? (buscar (second expre) amb)) (list (generar-mensaje-error :unbound-variable (second expre)) amb)
-                          :else (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre))))
+                          :else (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (first (evaluar (last expre) amb)))))
     :else (list (generar-mensaje-error :missing-or-extra "set!" expre) amb)))
 
 
