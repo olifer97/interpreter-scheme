@@ -228,6 +228,8 @@
     (igual? fnc 'reverse)  (fnc-reverse lae)
 
     (igual? fnc 'equal?)            (fnc-equal? lae)
+    
+    (igual? fnc 'quote) (evaluar-quote lae amb)
 
     :else (generar-mensaje-error :wrong-type-apply fnc)))
 
