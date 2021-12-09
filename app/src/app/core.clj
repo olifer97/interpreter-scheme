@@ -674,7 +674,7 @@
 (defn fnc-append
   "Devuelve el resultado de fusionar listas."
   [lists]
-  (reduce (fn [result c] (if (list? c)
+  (reduce (fn [result c] (if (seq? c)
                            (concat result c)
                            (reduced (generar-mensaje-error :wrong-type-arg 'append c))))
           '() lists))
@@ -684,7 +684,7 @@
                             :else (if bool (symbol "#t") (symbol "#f"))))
 
 (defn inverse-traduce-bool [scheme-bool] (cond
-                                           (seq? scheme-bool) scheme-bool ; is and error
+                                           (seq? scheme-bool) scheme-bool ; is an error
                                            (number? scheme-bool) scheme-bool
                                            (= (symbol "#t") scheme-bool) true
                                            :else false))
@@ -949,8 +949,8 @@
   (let [n (count expre)] (cond
                            (< n 3) (m-e-error "if" expre amb)
                            (> n 4) (m-e-error "if" expre amb)
-                           (= n 3) (if (inverse-traduce-bool (second expre)) (evaluar (second (next expre)) amb) (list (symbol "#<unspecified>") amb))
-                           (= n 4) (evaluar (if (inverse-traduce-bool (second expre)) (second (next expre)) (last expre)) amb))))
+                           (= n 3) (if (inverse-traduce-bool (first (evaluar (second expre) amb))) (evaluar (second (next expre)) amb) (list (symbol "#<unspecified>") amb))
+                           (= n 4) (evaluar (if (inverse-traduce-bool (first (evaluar (second expre) amb))) (second (next expre)) (last expre)) amb))))
 
 ; user=> (evaluar-or (list 'or) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
 ; (#f (#f #f #t #t))
