@@ -199,8 +199,6 @@
 
     (= fnc '+)            (fnc-sumar lae)
 
-    (= fnc '=)            (fnc-equal? lae)
-
     (igual? fnc 'append)  (fnc-append lae)
 
     (igual? fnc 'read)  (fnc-read lae)
@@ -660,6 +658,7 @@
   "Verifica la igualdad entre dos elementos al estilo de Scheme (case-insensitive)"
   [a b]
   (cond
+    (and (int? a) (int? b))(= a b)
     (= (type a) (type b)) (= (st/lower-case a) (st/lower-case b))
     :else false))
 
@@ -728,7 +727,7 @@
   "Devuelve la lectura de un elemento de Scheme desde la terminal/consola."
   [args]
   (cond
-    (empty? args) (symbol (leer-entrada))
+    (empty? args) (read-string (leer-entrada)) 
     (= 1 (count args)) (generar-mensaje-error :io-ports-not-implemented "read")
     :else (generar-mensaje-error :wrong-number-args-prim-proc "read")))
 
