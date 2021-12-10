@@ -670,7 +670,8 @@
   [a b]
   (cond
     (and (int? a) (int? b))(= a b)
-    (or (= (type a) (type b)) (and (seq? a) (seq? b))) (= (st/lower-case a) (st/lower-case b))
+    (and (seq? a) (seq? b))(= a b)
+    (= (type a) (type b)) (= (st/lower-case a) (st/lower-case b))
     :else false))
 
 ; user=> (fnc-append '( (1 2) (3) (4 5) (6 7)))

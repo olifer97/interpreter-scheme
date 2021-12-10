@@ -160,6 +160,10 @@
   (testing "fnc-equal?"
     (is (= (fnc-equal? '(1 1 2 1)) (symbol "#f")))))
 
+(deftest fnc-equal?-8-test
+  (testing "fnc-equal? list vs lazy-seq"
+    (is (= (fnc-equal? (list '(0 1) (take 2 [0 1]))) (symbol "#t")))))
+
 ;fnc-sumar
 
 (deftest fnc-sumar-0-test
