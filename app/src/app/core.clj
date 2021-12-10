@@ -923,7 +923,7 @@
   [expre amb]
   (cond
     (>= (count expre) 3) (cond
-                           (symbol? (second expre)) (if (> (count expre) 3) (m-e-error "define" expre amb) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (last expre))))
+                           (symbol? (second expre)) (if (> (count expre) 3) (m-e-error "define" expre amb) (list (symbol "#<unspecified>") (actualizar-amb amb (second expre) (first (evaluar (last expre) amb)))))
                            (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (rest expre) amb))
                            :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
     :else (m-e-error "define" expre amb)))
