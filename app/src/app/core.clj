@@ -646,6 +646,15 @@
   [sentence]
   (map (fn [item] (if (seq? item) (restaurar-bool item) (if (symbol? item) (symbol (st/replace item #"%" "#")) item))) sentence))
 
+
+(defn array-equal?
+  [elements]
+  (if (empty? elements) true (reduce (fn [result c] (cond
+                                                          (nil? (first result)) (reduced true)
+                                                          (igual? (first result) c) (rest result)
+                                                          :else (reduced false)))
+                                         (rest elements) elements)))
+
 ; user=> (igual? 'if 'IF)
 ; true
 ; user=> (igual? 'if 'if)
@@ -661,7 +670,7 @@
   [a b]
   (cond
     (and (int? a) (int? b))(= a b)
-    (= (type a) (type b)) (= (st/lower-case a) (st/lower-case b))
+    (or (= (type a) (type b)) (and (seq? a) (seq? b))) (= (st/lower-case a) (st/lower-case b))
     :else false))
 
 ; user=> (fnc-append '( (1 2) (3) (4 5) (6 7)))
@@ -709,11 +718,7 @@
 (defn fnc-equal?
   "Compara elementos. Si son iguales, devuelve #t. Si no, #f."
   [elements]
-  (traduce-bool (if (empty? elements) true (reduce (fn [result c] (cond
-                                                                    (nil? (first result)) (reduced true)
-                                                                    (igual? (first result) c) (rest result)
-                                                                    :else (reduced false)))
-                                                   (rest elements) elements))))
+  (traduce-bool (array-equal? elements)))
 
 ; user=> (fnc-read ())
 ; (hola
