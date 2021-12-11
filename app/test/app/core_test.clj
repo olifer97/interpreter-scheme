@@ -508,3 +508,7 @@ mundo)" (fnc-read ())) '(hola mundo)))))
 (deftest integracion-2-test
   (testing "evaluar or if >"
     (is (= (evaluar (list 'or (symbol "#f") (list 'if (list '> '(+ y 1) 3) 2 4)) (list 'y 1 '+ '+ '> '> (symbol "#f") (symbol "#f"))) (list 4 (list 'y 1 '+ '+ '> '> (symbol "#f") (symbol "#f")))))))
+
+(deftest integracion-3-test
+  (testing "aplicar-funcion-primitiva"
+    (is (= (aplicar-funcion-primitiva '+ '(1 2) (list '+ '+)) 3))))
