@@ -2,6 +2,16 @@
   (:require [clojure.test :refer :all]
             [app.core :refer :all]))
 
+; leer-entrada
+(deftest leer-entrada-0-test
+  (testing "leer-entrada"
+    (is (= (with-in-str "(hola
+mundo)" (leer-entrada)) "(hola mundo)"))))
+
+(deftest leer-entrada-1-test
+  (testing "leer-entrada"
+    (is (= (with-in-str "123" (leer-entrada)) "123"))))
+
 ; verificar-parentesis
 (deftest verificar-parentesis-0-test
   (testing "verificar-parentesis"
