@@ -466,3 +466,9 @@
 (deftest evaluar-set!-4-test
   (testing "evaluar-set!"
     (is (= (evaluar-set! '(set! 1 2) '(x 0)) (list (list (symbol ";ERROR:") (symbol "set!:") 'bad 'variable '1) '(x 0))))))
+
+; integracion
+
+(deftest integracion-0-test
+  (testing "evaluar-set!"
+    (is (= (evaluar-set! (list 'set! 'x '(+ 1 2)) '(x 0 + +)) (list (symbol "#<unspecified>") '(x 3 + +))))))
