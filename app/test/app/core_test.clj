@@ -470,5 +470,9 @@
 ; integracion
 
 (deftest integracion-0-test
-  (testing "evaluar-set!"
+  (testing "set! +"
     (is (= (evaluar-set! (list 'set! 'x '(+ 1 2)) '(x 0 + +)) (list (symbol "#<unspecified>") '(x 3 + +))))))
+
+(deftest integracion-1-test
+  (testing "define if >"
+    (is (= (evaluar-define (list 'define 'x (list 'if (list '> '(+ y 1) 0) 2)) '(y 1 + + > >)) (list (symbol "#<unspecified>") '(y 1 + + > > x 2))))))
