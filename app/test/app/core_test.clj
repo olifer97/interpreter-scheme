@@ -174,6 +174,24 @@ mundo)" (leer-entrada)) "(hola mundo)"))))
   (testing "fnc-equal? list vs lazy-seq"
     (is (= (fnc-equal? (list '(0 1) (take 2 [0 1]))) (symbol "#t")))))
 
+;fnc-read
+(deftest fnc-read-0-test
+  (testing "fnc-read"
+    (is (= (with-in-str "(hola
+mundo)" (fnc-read ())) '(hola mundo)))))
+
+(deftest fnc-read-1-test
+  (testing "fnc-read"
+    (is (= (fnc-read '(1)) (list (symbol ";ERROR:") (symbol "read:") 'Use 'of 'I/O 'ports 'not 'implemented)))))
+
+(deftest fnc-read-2-test
+  (testing "fnc-read"
+    (is (= (fnc-read '(1 2)) (list (symbol ";ERROR:") 'Wrong 'number 'of 'args 'given (symbol "#<primitive-procedure") (symbol (str "read" '>)))))))
+
+(deftest fnc-read-3-test
+  (testing "fnc-read"
+    (is (= (fnc-read '(1 2 3)) (list (symbol ";ERROR:") 'Wrong 'number 'of 'args 'given (symbol "#<primitive-procedure") (symbol (str "read" '>)))))))
+
 ;fnc-sumar
 
 (deftest fnc-sumar-0-test
