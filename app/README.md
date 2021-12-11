@@ -1,14 +1,23 @@
-# app
+# Scheme Interpreter
 
-A Clojure library designed to ... well, that part is up to you.
+Scheme interpreter. Dialect of LISP.
+
+Inspired in:
+- SCM version 5f2.
+- Copyright (C) 1990-2006 Free Software Foundation.
 
 ## Usage
 
-FIXME
+- To run interpreter: `lein run`
+
+    - Then `(load "demo")` to run scheme demo
+    - Then `(load "jarras")` to run jarras problem.
+
+- To run tests: `lein test`
 
 ## License
 
-Copyright © 2021 FIXME
+Copyright © 2021
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
