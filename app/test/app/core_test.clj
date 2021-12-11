@@ -504,3 +504,7 @@ mundo)" (fnc-read ())) '(hola mundo)))))
 (deftest integracion-1-test
   (testing "define if >"
     (is (= (evaluar-define (list 'define 'x (list 'if (list '> '(+ y 1) 0) 2)) '(y 1 + + > >)) (list (symbol "#<unspecified>") '(y 1 + + > > x 2))))))
+
+(deftest integracion-2-test
+  (testing "evaluar or if >"
+    (is (= (evaluar (list 'or (symbol "#f") (list 'if (list '> '(+ y 1) 3) 2 4)) (list 'y 1 '+ '+ '> '> (symbol "#f") (symbol "#f"))) (list 4 (list 'y 1 '+ '+ '> '> (symbol "#f") (symbol "#f")))))))

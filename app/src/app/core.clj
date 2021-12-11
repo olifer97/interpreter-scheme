@@ -680,8 +680,6 @@
 ; (;ERROR: append: Wrong type in arg 3)
 ; user=> (fnc-append '( (1 2) A (4 5) (6 7)))
 ; (;ERROR: append: Wrong type in arg A)
-
-
 (defn fnc-append
   "Devuelve el resultado de fusionar listas."
   [lists]
@@ -780,8 +778,6 @@
 ; (;ERROR: -: Wrong type in arg2 A)
 ; user=> (fnc-restar '(3 4 A 6))
 ; (;ERROR: -: Wrong type in arg2 A)
-
-
 (defn fnc-restar
   "Resta los elementos de un lista."
   [elements]
