@@ -41,6 +41,7 @@
 (declare fnc-read)
 (declare fnc-mayor)
 (declare fnc-menor)
+(declare fnc-igual)
 (declare fnc-null?)
 (declare fnc-sumar)
 (declare fnc-multiplicar)
@@ -53,6 +54,7 @@
 (declare fnc-newline)
 (declare fnc-reverse)
 (declare fnc-mayor-o-igual)
+(declare fnc-menor-o-igual)
 
 ; Funciones auxiliares
 
@@ -95,7 +97,7 @@
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
                'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'quote 'quote
                'read 'read 'reverse 'reverse 'set! 'set! (symbol "#f") (symbol "#f")
-               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '* '* '/ '/))) ; TODO: * / = <= eq?
+               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '<= '<= '* '* '/ '/ '= '=))) ; TODO: <= eq?
   ([amb]
    (print "> ") (flush)
    (try
@@ -198,8 +200,10 @@
     (= fnc '>)            (fnc-mayor lae)
 
     (= fnc '>=)            (fnc-mayor-o-igual lae)
-
-    ; TODO: fnc-menor-o-igual?
+    
+    (= fnc '<=)            (fnc-menor-o-igual lae)
+    
+    (= fnc '=)            (fnc-igual lae)
 
     (= fnc '-)            (fnc-restar lae)
 
@@ -720,7 +724,7 @@
 ; #t
 ; user=> (fnc-equal? '(A a A B))
 ; #f
-; user=> (fnc-equal? '(1 1 1 1))Divide
+; user=> (fnc-equal? '(1 1 1 1))
 ; #t
 ; user=> (fnc-equal? '(1 1 2 1))
 ; #f
@@ -862,6 +866,26 @@
                                                  :else (reduced false)))
                                 (rest elements) elements))))
 
+; user=> (fnc-igual ())
+; (;ERROR: Wrong number of args given =)
+; user=> (fnc-igual '(1))
+; (;ERROR: Wrong number of args given =)
+; user=> (fnc-igual '(1 1))
+; #t
+; user=> (fnc-igual '(1 2))
+; #f
+; user=> (fnc-igual '(2 2 2))
+; #t
+; user=> (fnc-igual '(2 2 A))
+; (;ERROR: <: Wrong type in arg2 A)
+(defn fnc-igual
+  "Compara numeros. Si son iguales, devuelve #t. Si no, #f."
+  [elements]
+  (cond
+    (< (count elements) 2) (generar-mensaje-error :wrong-number-args-oper "=")
+    :else (fnc-comp elements = "="))
+  )
+
 ; user=> (fnc-menor ())
 ; #t
 ; user=> (fnc-menor '(1))
@@ -936,6 +960,31 @@
   "Devuelve #t si los numeros de una lista estan en orden decreciente; si no, #f."
   [elements]
   (fnc-comp elements >= ">="))
+
+; user=> (fnc-menor-o-igual ())
+; #t
+; user=> (fnc-menor-o-igual '(1))
+; #t
+; user=> (fnc-menor-o-igual '(1 2))
+; #t
+; user=> (fnc-menor-o-igual '(1 2 3))
+; #t
+; user=> (fnc-menor-o-igual '(1 2 3 4))
+; #t
+; user=> (fnc-menor-o-igual '(1 2 2 4))
+; #t
+; user=> (fnc-menor-o-igual '(4 2 1 4))
+; #f
+; user=> (fnc-menor-o-igual '(A 1 2 3))
+; (;ERROR: >=: Wrong type in arg1 A)
+; user=> (fnc-menor-o-igual '(1 A 2 3))
+; (;ERROR: >=: Wrong type in arg2 A)
+; user=> (fnc-menor-o-igual '(1 2 A 3))
+; (;ERROR: >=: Wrong type in arg2 A)
+(defn fnc-menor-o-igual
+  "Devuelve #t si los numeros de una lista estan en orden decreciente; si no, #f."
+  [elements]
+  (fnc-comp elements <= "<="))
 
 ; user=> (evaluar-escalar 32 '(x 6 y 11 z "hola"))
 ; (32 (x 6 y 11 z "hola"))
