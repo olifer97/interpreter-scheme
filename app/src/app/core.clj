@@ -42,6 +42,7 @@
 (declare fnc-mayor)
 (declare fnc-menor)
 (declare fnc-igual)
+(declare fnc-eq?)
 (declare fnc-null?)
 (declare fnc-sumar)
 (declare fnc-multiplicar)
@@ -97,7 +98,7 @@
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
                'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'quote 'quote
                'read 'read 'reverse 'reverse 'set! 'set! (symbol "#f") (symbol "#f")
-               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '<= '<= '* '* '/ '/ '= '=))) ; TODO: <= eq?
+               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '<= '<= '* '* '/ '/ '= '= 'eq? 'eq?)))
   ([amb]
    (print "> ") (flush)
    (try
@@ -200,10 +201,12 @@
     (= fnc '>)            (fnc-mayor lae)
 
     (= fnc '>=)            (fnc-mayor-o-igual lae)
-    
+
     (= fnc '<=)            (fnc-menor-o-igual lae)
-    
+
     (= fnc '=)            (fnc-igual lae)
+    
+    (= fnc 'eq?)            (fnc-eq? lae)
 
     (= fnc '-)            (fnc-restar lae)
 
@@ -733,6 +736,7 @@
   [elements]
   (traduce-bool (array-equal? elements)))
 
+
 ; user=> (fnc-read ())
 ; (hola
 ; mundo)
@@ -772,7 +776,7 @@
   [elements]
   (cond
     (empty? elements) 0
-    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "+" (first elements))
+    (not (number? (first elements))) (generar-mensaje-error :wrong-type-arg1 "+" (first elements))
     :else (reduce (fn [result c] (try (+ c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "+" c)))))
                   0 elements)))
 
@@ -798,7 +802,7 @@
   (cond
     (empty? elements) (generar-mensaje-error :wrong-number-args-oper "-")
     (= 1 (count elements)) (- 0 (first elements))
-    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "-" (first elements))
+    (not (number? (first elements))) (generar-mensaje-error :wrong-type-arg1 "-" (first elements))
     :else (reduce (fn [result c] (try (- result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "-" c)))))
                   (* 2 (first elements)) elements)))
 
@@ -821,7 +825,7 @@
   [elements]
   (cond
     (empty? elements) 1
-    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "*" (first elements))
+    (not (number? (first elements))) (generar-mensaje-error :wrong-type-arg1 "*" (first elements))
     :else (reduce (fn [result c] (try (* c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "*" c)))))
                   1 elements)))
 
@@ -849,7 +853,7 @@
   (cond
     (empty? elements) (generar-mensaje-error :wrong-number-args-oper "/")
     (= 1 (count elements)) (if (= 0 (first elements)) (generar-mensaje-error :zero-division-error) (/ 1 (first elements)))
-    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "/" (first elements))
+    (not (number? (first elements))) (generar-mensaje-error :wrong-type-arg1 "/" (first elements))
     :else (reduce (fn [result c] (if (= 0 c) (generar-mensaje-error :zero-division-error) (try (/ result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "/" c))))))
                   (first elements) (rest elements))))
 
@@ -857,11 +861,11 @@
   [elements op opname]
   (traduce-bool (cond
                   (empty? elements) true
-                  (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
+                  (not (number? (first elements))) (generar-mensaje-error :wrong-type-arg1 opname (first elements))
                   :else (reduce (fn [result c] (cond
                                                  (nil? (first result)) (reduced true)
-                                                 (not (integer? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
-                                                 (not (integer? (first result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (first result)))
+                                                 (not (number? c)) (reduced (generar-mensaje-error :wrong-type-arg2 opname c))
+                                                 (not (number? (first result))) (reduced (generar-mensaje-error :wrong-type-arg2 opname (first result)))
                                                  (op c (first result)) (rest result)
                                                  :else (reduced false)))
                                 (rest elements) elements))))
@@ -883,8 +887,29 @@
   [elements]
   (cond
     (< (count elements) 2) (generar-mensaje-error :wrong-number-args-oper "=")
-    :else (fnc-comp elements = "="))
-  )
+    :else (fnc-comp elements = "=")))
+
+; user=> (fnc-eq? ())
+; (;ERROR: Wrong number of args given =)
+; user=> (fnc-eq? '(1))
+; (;ERROR: Wrong number of args given =)
+; user=> (fnc-eq? (list 'hello 'hello))
+; #t
+; user=> (fnc-eq? (list 'hello 'goodbye))
+; #f
+; user=> (fnc-eq? (list '(1 2) '(1 2)))
+; #f
+(defn fnc-eq?
+  "Compara elementos si son el mismo objeto."
+  [elements]
+  (traduce-bool (cond
+                  (not (= (count elements) 2)) (generar-mensaje-error :wrong-number-args-oper "eq?")
+                  :else (reduce (fn [result c] (cond
+                                                 (nil? (first result)) (reduced true)
+                                                 (and (symbol? c) (symbol? (first result))) (reduced (= c (first result)))
+                                                 (identical? c (first result)) (rest result)
+                                                 :else (reduced false)))
+                                (rest elements) elements))))
 
 ; user=> (fnc-menor ())
 ; #t
@@ -937,7 +962,7 @@
   (fnc-comp elements > ">"))
 
 ; user=> (fnc-mayor-o-igual ())
-; #t
+; #t(fnc-comp elements >= ">=")
 ; user=> (fnc-mayor-o-igual '(1))
 ; #t
 ; user=> (fnc-mayor-o-igual '(2 1))
@@ -1000,7 +1025,8 @@
   "Evalua una expresion escalar. Devuelve una lista con el resultado y un ambiente."
   [var amb]
   (list (cond
-          (integer? var) var
+          (number? var) var
+          (float? var) var
           (string? var) var
           (= (symbol "#<unspecified>") var) var
           :else (buscar var amb)) amb))
