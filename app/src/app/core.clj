@@ -16,6 +16,7 @@
 ; Funciones secundarias de evaluar
 (declare evaluar-if)
 (declare evaluar-or)
+(declare evaluar-and)
 (declare evaluar-cond)
 (declare evaluar-eval)
 (declare evaluar-exit)
@@ -96,7 +97,7 @@
    (repl (list 'append 'append 'car 'car 'cdr 'cdr 'cond 'cond 'cons 'cons 'define 'define
                'display 'display 'env 'env 'equal? 'equal? 'eval 'eval 'exit 'exit
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
-               'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'quote 'quote
+               'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'and 'and 'quote 'quote
                'read 'read 'reverse 'reverse 'set! 'set! (symbol "#f") (symbol "#f")
                (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '<= '<= '* '* '/ '/ '= '= 'eq? 'eq?)))
   ([amb]
@@ -134,7 +135,7 @@
 
       (igual? (first expre) 'or) (evaluar-or expre amb)
 
-      ; TODO: evaluar-and?
+      (igual? (first expre) 'and) (evaluar-and expre amb)
 
       (igual? (first expre) 'exit) (evaluar-exit expre amb)
 
@@ -1108,6 +1109,29 @@
   (let [args (rest expre)] (if (empty? args) (list (symbol "#f") amb) (list (reduce (fn [result c] (let [evaluated (first (evaluar c amb))] (cond
                                                                                                                                               (not (= (symbol "#f") evaluated)) (reduced evaluated)
                                                                                                                                               :else result)))
+                                                                                    (symbol "#f") args) amb))))
+
+; user=> (evaluar-and (list 'and) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (#t (#f #f #t #t))
+; user=> (evaluar-and (list 'and (symbol "#t")) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (#t (#f #f #t #t))
+; user=> (evaluar-and (list 'and 7) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (7 (#f #f #t #t))
+; user=> (evaluar-and (list 'and (symbol "#f") 5) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (#f (#f #f #t #t))
+; user=> (evaluar-and (list 'and (symbol "#t") (symbol "#t")) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (#t (#f #f #t #t))
+; user=> (evaluar-and (list 'and (symbol "#t") 5) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (5 (#f #f #t #t))
+; user=> (evaluar-and (list 'and (symbol "#t") 5 (symbol "#t")) (list (symbol "#f") (symbol "#f") (symbol "#t") (symbol "#t")))
+; (#t (#f #f #t #t))
+(defn evaluar-and
+  "Evalua una expresion `and`.  Devuelve una lista con el resultado y un ambiente."
+  [expre amb]
+
+  (let [args (rest expre)] (if (empty? args) (list (symbol "#t") amb) (list (reduce (fn [_ c] (let [evaluated (first (evaluar c amb))] (cond
+                                                                                                                                              (= (symbol "#f") evaluated) (reduced evaluated)
+                                                                                                                                              :else evaluated)))
                                                                                     (symbol "#f") args) amb))))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
