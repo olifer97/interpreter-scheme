@@ -43,6 +43,8 @@
 (declare fnc-menor)
 (declare fnc-null?)
 (declare fnc-sumar)
+(declare fnc-multiplicar)
+(declare fnc-dividir)
 (declare fnc-append)
 (declare fnc-equal?)
 (declare fnc-length)
@@ -93,7 +95,7 @@
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
                'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'quote 'quote
                'read 'read 'reverse 'reverse 'set! 'set! (symbol "#f") (symbol "#f")
-               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>=)))
+               (symbol "#t") (symbol "#t") '+ '+ '- '- '< '< '> '> '>= '>= '* '* '/ '/))) ; TODO: * / = <= eq?
   ([amb]
    (print "> ") (flush)
    (try
@@ -128,6 +130,8 @@
       (igual? (first expre) 'if) (evaluar-if expre amb)
 
       (igual? (first expre) 'or) (evaluar-or expre amb)
+
+      ; TODO: evaluar-and?
 
       (igual? (first expre) 'exit) (evaluar-exit expre amb)
 
@@ -195,9 +199,15 @@
 
     (= fnc '>=)            (fnc-mayor-o-igual lae)
 
+    ; TODO: fnc-menor-o-igual?
+
     (= fnc '-)            (fnc-restar lae)
 
     (= fnc '+)            (fnc-sumar lae)
+
+    (= fnc '*)            (fnc-multiplicar lae)
+
+    (= fnc '/)            (fnc-dividir lae)
 
     (igual? fnc 'append)  (fnc-append lae)
 
@@ -227,8 +237,8 @@
 
     (igual? fnc 'reverse)  (fnc-reverse lae)
 
-    (igual? fnc 'equal?)            (fnc-equal? lae)
-    
+    (igual? fnc 'equal?) (fnc-equal? lae)
+
     (igual? fnc 'quote) (evaluar-quote lae amb)
 
     :else (generar-mensaje-error :wrong-type-apply fnc)))
@@ -502,6 +512,7 @@
    (case cod
      :file-not-found (list (symbol ";ERROR:") 'No 'such 'file 'or 'directory)
      :warning-paren (list (symbol ";WARNING:") 'unexpected (symbol "\")\"#<input-port 0>"))
+     :zero-division-error (list (symbol ";ERROR:") 'Zero 'division 'error)
      ()))
   ([cod fnc]
    (cons (symbol ";ERROR:")
@@ -646,14 +657,13 @@
   [sentence]
   (map (fn [item] (if (seq? item) (restaurar-bool item) (if (symbol? item) (symbol (st/replace item #"%" "#")) item))) sentence))
 
-
 (defn array-equal?
   [elements]
   (if (empty? elements) true (reduce (fn [result c] (cond
-                                                          (nil? (first result)) (reduced true)
-                                                          (igual? (first result) c) (rest result)
-                                                          :else (reduced false)))
-                                         (rest elements) elements)))
+                                                      (nil? (first result)) (reduced true)
+                                                      (igual? (first result) c) (rest result)
+                                                      :else (reduced false)))
+                                     (rest elements) elements)))
 
 ; user=> (igual? 'if 'IF)
 ; true
@@ -669,8 +679,8 @@
   "Verifica la igualdad entre dos elementos al estilo de Scheme (case-insensitive)"
   [a b]
   (cond
-    (and (int? a) (int? b))(= a b)
-    (and (seq? a) (seq? b))(= a b)
+    (and (int? a) (int? b)) (= a b)
+    (and (seq? a) (seq? b)) (= a b)
     (= (type a) (type b)) (= (st/lower-case a) (st/lower-case b))
     :else false))
 
@@ -710,7 +720,7 @@
 ; #t
 ; user=> (fnc-equal? '(A a A B))
 ; #f
-; user=> (fnc-equal? '(1 1 1 1))
+; user=> (fnc-equal? '(1 1 1 1))Divide
 ; #t
 ; user=> (fnc-equal? '(1 1 2 1))
 ; #f
@@ -733,7 +743,7 @@
   "Devuelve la lectura de un elemento de Scheme desde la terminal/consola."
   [args]
   (cond
-    (empty? args) (read-string (leer-entrada)) 
+    (empty? args) (read-string (leer-entrada))
     (= 1 (count args)) (generar-mensaje-error :io-ports-not-implemented "read")
     :else (generar-mensaje-error :wrong-number-args-prim-proc "read")))
 
@@ -787,6 +797,57 @@
     (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "-" (first elements))
     :else (reduce (fn [result c] (try (- result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "-" c)))))
                   (* 2 (first elements)) elements)))
+
+; user=> (fnc-multiplicar ())
+; 1
+; user=> (fnc-multiplicar '(3))
+; 3
+; user=> (fnc-multiplicar '(3 4))
+; 12
+; user=> (fnc-multiplicar '(3 4 5))
+; 60
+; user=> (fnc-multiplicar '(A 4 5 6))
+; (;ERROR: *: Wrong type in arg1 A)
+; user=> (fnc-multiplicar '(3 A 5 6))
+; (;ERROR: *: Wrong type in arg2 A)
+; user=> (fnc-multiplicar '(3 4 A 6))
+; (;ERROR: *: Wrong type in arg2 A)
+(defn fnc-multiplicar
+  "Multiplica los elementos de una lista."
+  [elements]
+  (cond
+    (empty? elements) 1
+    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "*" (first elements))
+    :else (reduce (fn [result c] (try (* c result) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "*" c)))))
+                  1 elements)))
+
+; user=> (fnc-dividir ())
+; (;ERROR: -: Wrong number of args given)
+; user=> (fnc-dividir '(3))
+; 1/3
+; user=> (fnc-dividir '(4 2))
+; 2
+; user=> (fnc-dividir '(6 2 3))
+; 1
+; user=> (fnc-dividir '(A 4 5 6))
+; (;ERROR: -: Wrong type in arg1 A)
+; user=> (fnc-dividir '(3 A 5 6))
+; (;ERROR: -: Wrong type in arg2 A)
+; user=> (fnc-dividir '(3 4 A 6))
+; (;ERROR: -: Wrong type in arg2 A)
+; user=> (fnc-dividir '(3 0))
+; (;ERROR: Divide by zero)
+; user=> (fnc-dividir '(0 3))
+; 0
+(defn fnc-dividir
+  "Divide los elementos de una lista."
+  [elements]
+  (cond
+    (empty? elements) (generar-mensaje-error :wrong-number-args-oper "/")
+    (= 1 (count elements)) (if (= 0 (first elements)) (generar-mensaje-error :zero-division-error) (/ 1 (first elements)))
+    (not (integer? (first elements))) (generar-mensaje-error :wrong-type-arg1 "/" (first elements))
+    :else (reduce (fn [result c] (if (= 0 c) (generar-mensaje-error :zero-division-error) (try (/ result c) (catch Exception e (reduced (generar-mensaje-error :wrong-type-arg2 "/" c))))))
+                  (first elements) (rest elements))))
 
 (defn fnc-comp
   [elements op opname]
@@ -970,9 +1031,9 @@
   [expre amb]
 
   (let [args (rest expre)] (if (empty? args) (list (symbol "#f") amb) (list (reduce (fn [result c] (let [evaluated (first (evaluar c amb))] (cond
-                                                          (not (= (symbol "#f") evaluated)) (reduced evaluated)
-                                                          :else result)))
-        (symbol "#f") args) amb))))
+                                                                                                                                              (not (= (symbol "#f") evaluated)) (reduced evaluated)
+                                                                                                                                              :else result)))
+                                                                                    (symbol "#f") args) amb))))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
 ; (#<unspecified> (x 1))
