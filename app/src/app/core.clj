@@ -1091,7 +1091,7 @@
     (= (count expre) 3) (evaluar (map (partial replace-var (second expre)) (last expre)) amb)
     :else (m-e-error "let" expre amb)))
 
-; > (begin (define x 0) (set! x 5) (+ x 1)) => 6
+; > (begin (define x 0) (set! x 5) (+ x 1))
 ; 6
 ; > (begin (display "4 plus 1 equals ") (display (+ 4 1)) (newline))
 ; #unspecified
