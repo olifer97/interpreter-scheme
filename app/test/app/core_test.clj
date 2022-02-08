@@ -356,6 +356,40 @@ mundo)" (fnc-read ())) '(hola mundo)))))
   (testing "fnc-mayor-o-igual"
     (is (= (fnc-mayor-o-igual '(2 1 A 0)) (list (symbol ";ERROR:") (symbol ">=:") 'Wrong 'type 'in 'arg2 'A)))))
 
+; fnc-menor-o-igual
+(deftest fnc-menor-o-igual-0-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual ()) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-1-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1)) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-2-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1 2)) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-3-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1 2 3)) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-4-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1 2 3 4)) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-5-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1 2 2 4)) (symbol "#t")))))
+
+(deftest fnc-menor-o-igual-6-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(4 2 1 4)) (symbol "#f")))))
+
+(deftest fnc-menor-o-igual-7-test
+  (testing "fnc-menor-o-igual"
+    (is (= (fnc-menor-o-igual '(1 2 A 4)) (list (symbol ";ERROR:") (symbol "<=:") 'Wrong 'type 'in 'arg2 'A)))))
+
+
 ; evaluar-escalar
 
 (deftest evaluar-escalar-0-test
