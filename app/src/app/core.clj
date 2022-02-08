@@ -25,6 +25,7 @@
 (declare evaluar-quote)
 (declare evaluar-define)
 (declare evaluar-let)
+(declare evaluar-begin)
 (declare evaluar-lambda)
 (declare evaluar-escalar)
 
@@ -95,7 +96,7 @@
    (println "Inspirado en:")
    (println "  SCM version 5f2.")                        ; https://people.csail.mit.edu/jaffer/SCM.html
    (println "  Copyright (C) 1990-2006 Free Software Foundation.") (prn) (flush)
-   (repl (list 'append 'append 'car 'car 'cdr 'cdr 'cond 'cond 'cons 'cons 'define 'define 'let 'let
+   (repl (list 'append 'append 'car 'car 'cdr 'cdr 'cond 'cond 'cons 'cons 'define 'define 'let 'let 'begin 'begin
                'display 'display 'env 'env 'equal? 'equal? 'eval 'eval 'exit 'exit
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
                'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'and 'and 'quote 'quote
@@ -129,8 +130,10 @@
       (not (seq? expre))             (evaluar-escalar expre amb)
 
       (igual? (first expre) 'define) (evaluar-define expre amb)
-      
+
       (igual? (first expre) 'let) (evaluar-let expre amb)
+
+      (igual? (first expre) 'begin) (evaluar-begin expre amb)
 
       (igual? (first expre) 'set!) (evaluar-set! expre amb)
 
@@ -209,7 +212,7 @@
     (= fnc '<=)            (fnc-menor-o-igual lae)
 
     (= fnc '=)            (fnc-igual lae)
-    
+
     (= fnc 'eq?)            (fnc-eq? lae)
 
     (= fnc '-)            (fnc-restar lae)
@@ -627,8 +630,6 @@
 ; 3
 ; user=> (buscar 'f '(a 1 b 2 c 3 d 4 e 5))
 ; (;ERROR: unbound variable: f)
-
-
 (defn buscar
   "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
    y devuelve el valor asociado. Devuelve un error :unbound-variable si no la encuentra."
@@ -1072,16 +1073,16 @@
 
 (defn replace-var
   [vars element]
-  (reduce 
-        (fn [result c] (cond
-                         (= (first c) element) (reduced (second c))
-                         (nil? (first result)) (reduced element)
-                         :else (rest result)))
-        (rest vars) vars))
+  (reduce
+   (fn [result c] (cond
+                    (= (first c) element) (reduced (second c))
+                    (nil? (first result)) (reduced element)
+                    :else (rest result)))
+   (rest vars) vars))
 
-; user=> (evaluar-let '(let ((x 10) (y 20)) (+ x y)) '(a 1))
+; user=> (evaluar-let '(let ((x 10) (y 20)) (+ x y)) '(a 1 + +))
 ; (30 (a 1))
-; user=> (evaluar-let '(let ((x 2)) (* x 50)) '(a 1))
+; user=> (evaluar-let '(let ((x 2)) (* x 50)) '(a 1 * *))
 ; (100 (a 1))
 (defn evaluar-let
   "Evalua una expresion `let`. Devuelve una lista con el resultado y el ambiente."
@@ -1089,6 +1090,15 @@
   (cond
     (= (count expre) 3) (evaluar (map (partial replace-var (second expre)) (last expre)) amb)
     :else (m-e-error "let" expre amb)))
+
+; > (begin (define x 0) (set! x 5) (+ x 1)) => 6
+; 6
+; > (begin (display "4 plus 1 equals ") (display (+ 4 1)) (newline))
+; #unspecified
+(defn evaluar-begin
+  "Evalua una expresion `begin`. Devuelve una lista con el resultado y el ambiente modificado."
+  [expre amb]
+  (reduce (fn [result c] (evaluar c (second result))) (list (symbol "#<unspecified>") amb) (rest expre)))
 
 ; user=> (evaluar-if '(if 1 2) '(n 7))
 ; (2 (n 7))
@@ -1153,8 +1163,8 @@
   [expre amb]
 
   (let [args (rest expre)] (if (empty? args) (list (symbol "#t") amb) (list (reduce (fn [_ c] (let [evaluated (first (evaluar c amb))] (cond
-                                                                                                                                              (= (symbol "#f") evaluated) (reduced evaluated)
-                                                                                                                                              :else evaluated)))
+                                                                                                                                         (= (symbol "#f") evaluated) (reduced evaluated)
+                                                                                                                                         :else evaluated)))
                                                                                     (symbol "#f") args) amb))))
 
 ; user=> (evaluar-set! '(set! x 1) '(x 0))
