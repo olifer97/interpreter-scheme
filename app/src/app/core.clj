@@ -24,6 +24,7 @@
 (declare evaluar-set!)
 (declare evaluar-quote)
 (declare evaluar-define)
+(declare evaluar-let)
 (declare evaluar-lambda)
 (declare evaluar-escalar)
 
@@ -94,7 +95,7 @@
    (println "Inspirado en:")
    (println "  SCM version 5f2.")                        ; https://people.csail.mit.edu/jaffer/SCM.html
    (println "  Copyright (C) 1990-2006 Free Software Foundation.") (prn) (flush)
-   (repl (list 'append 'append 'car 'car 'cdr 'cdr 'cond 'cond 'cons 'cons 'define 'define
+   (repl (list 'append 'append 'car 'car 'cdr 'cdr 'cond 'cond 'cons 'cons 'define 'define 'let 'let
                'display 'display 'env 'env 'equal? 'equal? 'eval 'eval 'exit 'exit
                'if 'if 'lambda 'lambda 'length 'length 'list 'list 'list? 'list? 'load 'load
                'newline 'newline 'nil (symbol "#f") 'not 'not 'null? 'null? 'or 'or 'and 'and 'quote 'quote
@@ -128,6 +129,8 @@
       (not (seq? expre))             (evaluar-escalar expre amb)
 
       (igual? (first expre) 'define) (evaluar-define expre amb)
+      
+      (igual? (first expre) 'let) (evaluar-let expre amb)
 
       (igual? (first expre) 'set!) (evaluar-set! expre amb)
 
@@ -1066,6 +1069,26 @@
                            (and (seq? (second expre)) (> (count (second expre)) 0)) (list (symbol "#<unspecified>") (definir-funcion (rest expre) amb))
                            :else (list (generar-mensaje-error :bad-variable "define" expre) amb))
     :else (m-e-error "define" expre amb)))
+
+(defn replace-var
+  [vars element]
+  (reduce 
+        (fn [result c] (cond
+                         (= (first c) element) (reduced (second c))
+                         (nil? (first result)) (reduced element)
+                         :else (rest result)))
+        (rest vars) vars))
+
+; user=> (evaluar-let '(let ((x 10) (y 20)) (+ x y)) '(a 1))
+; (30 (a 1))
+; user=> (evaluar-let '(let ((x 2)) (* x 50)) '(a 1))
+; (100 (a 1))
+(defn evaluar-let
+  "Evalua una expresion `let`. Devuelve una lista con el resultado y el ambiente."
+  [expre amb]
+  (cond
+    (= (count expre) 3) (evaluar (map (partial replace-var (second expre)) (last expre)) amb)
+    :else (m-e-error "let" expre amb)))
 
 ; user=> (evaluar-if '(if 1 2) '(n 7))
 ; (2 (n 7))
